@@ -1,1 +1,1240 @@
 # mintledger.github.io
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Mint Ledger — Rare Coins & Currency</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;--surface:#111;--card:#161616;--border:#242424;
+  --accent:#f0c040;--accent2:#e05c2a;--text:#f0ede8;--muted:#666;
+  --font-display:'Bebas Neue',sans-serif;--font-body:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.5;overflow-x:hidden;min-height:100vh;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:9000;}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(10,10,10,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+.logo{font-family:var(--font-display);font-size:20px;letter-spacing:3px;color:var(--accent);text-decoration:none;}
+nav{display:flex;gap:28px;align-items:center;}
+nav a{color:var(--muted);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:color .2s;}
+nav a:hover,nav a.active{color:var(--text);}
+.header-right{display:flex;gap:12px;align-items:center;}
+.admin-link{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);cursor:pointer;border:1px solid var(--border);padding:6px 14px;background:none;font-family:var(--font-body);transition:all .2s;}
+.admin-link:hover{border-color:var(--accent);color:var(--accent);}
+.cart-btn{display:flex;align-items:center;gap:8px;background:var(--accent);color:#000;border:none;padding:8px 18px;font-family:var(--font-body);font-weight:700;font-size:13px;cursor:pointer;transition:background .2s;}
+.cart-btn:hover{background:#ffd060;}
+.cart-count{background:var(--accent2);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+/* MARQUEE */
+.marquee-wrap{overflow:hidden;background:var(--accent);padding:7px 0;}
+.marquee-track{display:flex;animation:marquee 22s linear infinite;white-space:nowrap;}
+@keyframes marquee{to{transform:translateX(-50%);}}
+.marquee-item{padding:0 32px;font-family:var(--font-display);font-size:13px;letter-spacing:3px;color:#000;display:flex;align-items:center;gap:16px;}
+.marquee-dot{width:5px;height:5px;border-radius:50%;background:rgba(0,0,0,.4);display:inline-block;}
+
+/* HERO */
+.hero{position:relative;min-height:460px;display:flex;align-items:flex-end;padding:60px 40px;overflow:hidden;border-bottom:1px solid var(--border);}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 80% 50%,rgba(240,192,64,.12) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 20% 80%,rgba(224,92,42,.07) 0%,transparent 60%);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(240,192,64,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(240,192,64,.04) 1px,transparent 1px);background-size:60px 60px;}
+.hero-deco{position:absolute;right:80px;top:50%;transform:translateY(-50%);width:320px;height:320px;border-radius:50%;border:1.5px solid rgba(240,192,64,.18);animation:spin 24s linear infinite;}
+.hero-deco::before{content:'';position:absolute;inset:24px;border-radius:50%;border:1px solid rgba(240,192,64,.08);}
+.hero-deco-inner{position:absolute;right:160px;top:50%;transform:translateY(-50%);width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 35% 32%,#d4a830,#8a6818);box-shadow:0 0 60px rgba(240,192,64,.25),inset 0 2px 4px rgba(255,255,255,.2),inset 0 -4px 8px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;animation:float 6s ease-in-out infinite;}
+@keyframes spin{to{transform:translateY(-50%) rotate(360deg);}}
+@keyframes float{0%,100%{transform:translateY(-50%);}50%{transform:translateY(calc(-50% - 10px));}}
+.hero-content{position:relative;z-index:2;max-width:520px;}
+.hero h1{font-family:var(--font-display);font-size:clamp(60px,7vw,96px);line-height:.92;letter-spacing:2px;margin-bottom:20px;}
+.hero h1 span{color:var(--accent);}
+.hero p{color:var(--muted);font-size:15px;max-width:360px;margin-bottom:32px;line-height:1.7;}
+.btn-primary{background:var(--accent);color:#000;border:none;padding:13px 32px;font-family:var(--font-body);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-primary:hover{background:#ffd060;}
+.hero-stats{display:flex;gap:36px;margin-top:40px;padding-top:28px;border-top:1px solid var(--border);}
+.stat-num{font-family:var(--font-display);font-size:32px;color:var(--accent);}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:18px 40px;border-bottom:1px solid var(--border);background:var(--surface);}
+.filter-tabs{display:flex;gap:4px;flex-wrap:wrap;}
+.filter-tab{padding:7px 18px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.filter-tab:hover{border-color:var(--accent);color:var(--text);}
+.filter-tab.active{background:var(--accent);border-color:var(--accent);color:#000;}
+.filter-right{display:flex;gap:10px;align-items:center;}
+.search-input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 14px;font-family:var(--font-mono);font-size:12px;outline:none;width:200px;transition:border-color .2s;}
+.search-input::placeholder{color:var(--muted);}
+.search-input:focus{border-color:var(--accent);}
+.sort-select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 14px;font-family:var(--font-mono);font-size:12px;cursor:pointer;outline:none;}
+
+/* SHOP */
+.shop{padding:40px;}
+.shop-header{display:flex;align-items:baseline;gap:14px;margin-bottom:28px;}
+.shop-header h2{font-family:var(--font-display);font-size:44px;letter-spacing:2px;}
+.shop-count{font-family:var(--font-mono);font-size:12px;color:var(--muted);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:2px;}
+
+/* PRODUCT CARD */
+.card{background:var(--card);border:1px solid var(--border);position:relative;overflow:hidden;cursor:pointer;transition:all .3s;display:flex;flex-direction:column;}
+.card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 20px 60px rgba(240,192,64,.08);z-index:2;}
+.card.sold-out{opacity:.7;}
+.card.sold-out .card-img{filter:grayscale(60%);}
+.card-badges{position:absolute;top:14px;left:14px;z-index:3;display:flex;flex-direction:column;gap:4px;}
+.card-badge{padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
+.badge-rare{background:var(--accent2);color:#fff;}
+.badge-foreign{background:#5c6dba;color:#fff;}
+.badge-proof{background:#7c4dba;color:#fff;}
+.badge-low-mintage{background:#2a7a5c;color:#fff;}
+.badge-error{background:#c0392b;color:#fff;}
+.badge-on-sale{background:var(--accent2);color:#fff;}
+.badge-sold{background:#333;color:#666;}
+.card-img{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:#0e0e0e;position:relative;overflow:hidden;}
+.coin-placeholder{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:48px;background:radial-gradient(circle at 35% 32%,#d4a830,#8a6818);box-shadow:0 8px 32px rgba(0,0,0,.6);transition:transform .4s;}
+.card:hover .coin-placeholder{transform:rotate(12deg) scale(1.05);}
+.photo-pair{width:100%;height:100%;position:relative;}
+.photo-pair img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .4s;}
+.photo-reverse{opacity:0;}
+.card:hover .photo-obverse{opacity:0;}
+.card:hover .photo-reverse{opacity:1;}
+.single-photo{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+.card:hover .single-photo{transform:scale(1.04);}
+.flip-hint{position:absolute;bottom:8px;right:8px;z-index:3;background:rgba(0,0,0,.7);color:var(--muted);font-size:9px;font-weight:600;letter-spacing:1px;padding:3px 8px;text-transform:uppercase;opacity:0;transition:opacity .3s;}
+.card:hover .flip-hint{opacity:1;}
+.card-body{padding:18px;flex:1;display:flex;flex-direction:column;}
+.card-category{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.card-name{font-size:16px;font-weight:600;margin-bottom:3px;line-height:1.3;}
+.card-year{font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-bottom:14px;}
+.card-meta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;padding:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.meta-item{font-size:10px;color:var(--muted);}
+.meta-item span{display:block;font-weight:600;color:var(--text);font-size:12px;margin-top:1px;}
+.card-desc{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:14px;}
+.card-price{font-family:var(--font-display);font-size:28px;color:var(--accent);}
+.card-price-sub{font-size:10px;color:var(--muted);}
+.add-btn{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 16px;font-family:var(--font-body);font-weight:700;font-size:11px;cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.add-btn:hover:not(:disabled){background:var(--accent);color:#000;}
+.add-btn:disabled{background:var(--border);border-color:var(--border);color:var(--muted);cursor:not-allowed;}
+.empty-state{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted);}
+.empty-state-icon{font-size:48px;margin-bottom:16px;opacity:.3;}
+
+/* DETAIL MODAL */
+.detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:700;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;padding:20px;backdrop-filter:blur(8px);}
+.detail-overlay.open{opacity:1;pointer-events:all;}
+.detail-modal{background:var(--surface);border:1px solid var(--border);width:100%;max-width:900px;max-height:92vh;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;position:relative;}
+.detail-close{position:absolute;top:16px;right:16px;background:rgba(0,0,0,.7);border:1px solid var(--border);color:var(--text);width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;z-index:10;transition:all .2s;}
+.detail-close:hover{border-color:var(--accent);color:var(--accent);}
+.detail-img{position:relative;background:#0e0e0e;aspect-ratio:1;overflow:hidden;cursor:pointer;}
+.detail-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .5s;}
+.detail-img .photo-reverse{opacity:0;}
+.detail-img.flipped .photo-obverse{opacity:0;}
+.detail-img.flipped .photo-reverse{opacity:1;}
+.detail-img .coin-placeholder{width:200px;height:200px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:64px;}
+.detail-flip-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:var(--muted);font-size:10px;font-weight:600;letter-spacing:1px;padding:4px 12px;text-transform:uppercase;white-space:nowrap;}
+.detail-body{padding:32px;display:flex;flex-direction:column;}
+.detail-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.detail-name{font-family:var(--font-display);font-size:34px;letter-spacing:1px;line-height:1;margin-bottom:8px;}
+.detail-sub{font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-bottom:20px;}
+.detail-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;padding:16px;background:var(--card);border:1px solid var(--border);}
+.detail-meta-item{font-size:11px;color:var(--muted);}
+.detail-meta-item span{display:block;font-weight:600;color:var(--text);font-size:13px;margin-top:2px;}
+.detail-desc{font-size:13px;color:var(--muted);line-height:1.8;flex:1;margin-bottom:20px;}
+.detail-footer{padding-top:20px;border-top:1px solid var(--border);}
+.detail-price{font-family:var(--font-display);font-size:40px;color:var(--accent);}
+.detail-price-sub{font-size:11px;color:var(--muted);margin-bottom:10px;}
+.detail-stock-warn{font-size:11px;color:var(--accent2);font-weight:600;margin-bottom:10px;}
+.detail-qty-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.detail-add-btn{width:100%;background:var(--accent);color:#000;border:none;padding:14px;font-family:var(--font-body);font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.detail-add-btn:hover:not(:disabled){background:#ffd060;}
+.detail-add-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
+@media(max-width:700px){.detail-modal{grid-template-columns:1fr;}.detail-img{aspect-ratio:4/3;}}
+
+/* CART */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:600;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px);}
+.cart-overlay.open{opacity:1;pointer-events:all;}
+.cart-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100vw;background:var(--surface);border-left:1px solid var(--border);z-index:601;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.cart-overlay.open .cart-drawer{transform:translateX(0);}
+.cart-header{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;border-bottom:1px solid var(--border);}
+.cart-title{font-family:var(--font-display);font-size:28px;letter-spacing:2px;}
+.cart-close{background:none;border:1px solid var(--border);color:var(--text);width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s;}
+.cart-close:hover{border-color:var(--accent);color:var(--accent);}
+.cart-items{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:2px;}
+.cart-item{display:flex;gap:14px;align-items:center;padding:14px;background:var(--card);border:1px solid var(--border);position:relative;}
+.cart-thumb{width:54px;height:54px;object-fit:cover;flex-shrink:0;}
+.cart-thumb-ph{width:54px;height:54px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;background:radial-gradient(circle at 35% 32%,#d4a830,#8a6818);}
+.cart-item-info{flex:1;min-width:0;}
+.cart-item-name{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cart-item-sub{font-size:11px;color:var(--muted);margin-bottom:6px;}
+.cart-item-controls{display:flex;align-items:center;gap:6px;}
+.qty-btn{background:var(--border);border:none;color:var(--text);width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:background .2s;}
+.qty-btn:hover{background:var(--accent);color:#000;}
+.qty-val{font-family:var(--font-mono);font-size:13px;min-width:22px;text-align:center;}
+.cart-item-price{font-family:var(--font-display);font-size:20px;color:var(--accent);white-space:nowrap;}
+.cart-remove{position:absolute;top:7px;right:7px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;transition:color .2s;}
+.cart-remove:hover{color:var(--accent2);}
+.cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:13px;gap:10px;}
+.cart-empty-icon{font-size:44px;opacity:.25;}
+.cart-footer{padding:20px 24px;border-top:1px solid var(--border);background:var(--bg);}
+.cart-line{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px;}
+.cart-total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0;border-top:1px solid var(--border);margin-bottom:14px;}
+.cart-total-label{font-family:var(--font-display);font-size:20px;letter-spacing:1px;}
+.cart-total-price{font-family:var(--font-display);font-size:30px;color:var(--accent);}
+.checkout-btn{width:100%;background:var(--accent);color:#000;border:none;padding:15px;font-family:var(--font-body);font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;}
+.checkout-btn:hover{background:#ffd060;}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:800;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;padding:20px;backdrop-filter:blur(6px);}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid var(--border);}
+.modal-title{font-family:var(--font-display);font-size:26px;letter-spacing:2px;}
+.modal-close{background:none;border:1px solid var(--border);color:var(--text);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .2s;}
+.modal-close:hover{border-color:var(--accent2);color:var(--accent2);}
+.modal-body{padding:28px;}
+
+/* FORMS */
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.form-label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.form-input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:11px 14px;font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .2s;width:100%;}
+.form-input:focus{border-color:var(--accent);}
+select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:32px;}
+textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body);}
+.form-error{color:var(--accent2);font-size:12px;margin-top:4px;display:none;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.btn-full{width:100%;background:var(--accent);color:#000;border:none;padding:13px;font-family:var(--font-body);font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;}
+.btn-full:hover{background:#ffd060;}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text);padding:10px 18px;font-family:var(--font-body);font-weight:600;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.btn-danger{border-color:rgba(224,92,42,.4);color:var(--accent2);}
+.btn-danger:hover{border-color:var(--accent2);background:rgba(224,92,42,.1);}
+
+/* PHOTO UPLOAD */
+.photo-upload-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:4px;}
+.photo-slot-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.photo-upload-area{border:1.5px dashed var(--border);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px 10px;cursor:pointer;transition:all .2s;position:relative;text-align:center;min-height:120px;}
+.photo-upload-area:hover{border-color:var(--accent);}
+.photo-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:24px;opacity:.4;}
+.upload-label{font-size:11px;color:var(--muted);font-weight:600;}
+.upload-sub{font-size:10px;color:var(--muted);opacity:.6;}
+.photo-preview{width:100%;height:110px;object-fit:cover;display:none;}
+.photo-preview.visible{display:block;}
+.form-actions{display:flex;gap:12px;margin-top:24px;}
+
+/* ADMIN */
+.admin-overlay{position:fixed;inset:0;background:var(--bg);z-index:900;display:none;flex-direction:column;overflow:hidden;}
+.admin-overlay.open{display:flex;}
+.admin-header{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;}
+.admin-title{font-family:var(--font-display);font-size:24px;letter-spacing:3px;color:var(--accent);}
+.admin-header-right{display:flex;gap:12px;align-items:center;}
+.admin-body{display:flex;flex:1;overflow:hidden;}
+.admin-sidebar{width:260px;border-right:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.admin-sidebar-section{padding:20px;border-bottom:1px solid var(--border);}
+.admin-sidebar-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.sidebar-stat{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;}
+.sidebar-stat:last-child{border-bottom:none;}
+.sidebar-stat-val{font-family:var(--font-mono);font-size:13px;color:var(--accent);}
+.add-coin-btn{width:100%;background:var(--accent);color:#000;border:none;padding:12px;font-family:var(--font-body);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;}
+.add-coin-btn:hover{background:#ffd060;}
+.admin-coin-list-label{padding:16px 20px 4px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.admin-coin-list{flex:1;overflow-y:auto;}
+.admin-coin-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s;}
+.admin-coin-item:hover,.admin-coin-item.selected{background:rgba(240,192,64,.06);}
+.admin-coin-item.selected{border-left:2px solid var(--accent);}
+.admin-coin-thumb{width:40px;height:40px;object-fit:cover;border-radius:50%;flex-shrink:0;}
+.admin-coin-thumb-ph{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 35% 32%,#d4a830,#8a6818);flex-shrink:0;}
+.admin-coin-info{flex:1;min-width:0;}
+.admin-coin-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.admin-coin-price{font-family:var(--font-mono);font-size:11px;color:var(--accent);}
+.admin-main{flex:1;overflow-y:auto;padding:32px 40px;}
+.admin-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;color:var(--muted);gap:12px;}
+.admin-welcome-icon{font-size:52px;opacity:.2;}
+.coin-form{max-width:620px;}
+.coin-form-title{font-family:var(--font-display);font-size:32px;letter-spacing:2px;margin-bottom:28px;}
+
+/* SELECTION ROWS (used in checkout) */
+.sel-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--border);cursor:pointer;transition:border-color .2s;margin-bottom:8px;}
+.sel-row:hover{border-color:var(--accent);}
+.sel-radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--muted);flex-shrink:0;box-sizing:border-box;transition:all .15s;}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--accent);color:#000;padding:11px 24px;font-weight:700;font-size:12px;letter-spacing:.5px;z-index:9999;transition:transform .3s;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);}
+::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+
+@media(max-width:768px){
+  header{padding:0 20px;}nav{display:none;}
+  .hero{padding:40px 20px;min-height:auto;}.hero-deco,.hero-deco-inner{display:none;}
+  .shop{padding:24px 20px;}.filter-bar{padding:14px 20px;}
+  .admin-sidebar{display:none;}.admin-main{padding:20px;}
+  .form-row,.photo-upload-pair{grid-template-columns:1fr;}
+}
+
+/* SELL SECTION */
+.sell-section{padding:80px 40px;border-top:1px solid var(--border);background:var(--surface);}
+.sell-section-inner{max-width:720px;margin:0 auto;}
+.sell-header{margin-bottom:48px;}
+.sell-header h2{font-family:var(--font-display);font-size:clamp(48px,6vw,80px);letter-spacing:2px;line-height:.95;margin-bottom:16px;}
+.sell-header h2 span{color:var(--accent);}
+.sell-header p{color:var(--muted);font-size:15px;line-height:1.8;max-width:520px;}
+.sell-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:48px;}
+.sell-step{padding:24px;background:var(--card);border:1px solid var(--border);text-align:center;}
+.sell-step-num{font-family:var(--font-display);font-size:40px;color:var(--accent);margin-bottom:8px;}
+.sell-step-label{font-size:13px;font-weight:600;margin-bottom:4px;}
+.sell-step-sub{font-size:11px;color:var(--muted);line-height:1.5;}
+.sell-form{background:var(--card);border:1px solid var(--border);padding:36px;}
+.sell-form-title{font-family:var(--font-display);font-size:28px;letter-spacing:2px;margin-bottom:24px;}
+.sell-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:4px;}
+.sell-photo-slot{border:1.5px dashed var(--border);background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 8px;cursor:pointer;transition:all .2s;position:relative;text-align:center;aspect-ratio:1;}
+.sell-photo-slot:hover{border-color:var(--accent);}
+.sell-photo-slot input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.sell-photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
+.sell-photo-slot img.visible{display:block;}
+.sell-photo-slot .slot-label{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+@media(max-width:768px){
+  .sell-section{padding:48px 20px;}
+  .sell-steps{grid-template-columns:1fr;}
+  .sell-photo-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#">THE MINT LEDGER</a>
+  <nav>
+    <a onclick="filterCoins('all',this)" class="active">All</a>
+    <a onclick="filterCoins('rare',this)">Rare</a>
+    <a onclick="filterCoins('foreign',this)">Foreign</a>
+    <a onclick="openSellSection(event)">Sell to Us</a>
+  </nav>
+  <div class="header-right">
+    <button class="admin-link" onclick="openAdminGate()">&#9881; Admin</button>
+    <button class="cart-btn" onclick="toggleCart()">Cart <span class="cart-count" id="cart-count">0</span></button>
+  </div>
+</header>
+
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee-track">
+    <span class="marquee-item">AUSTRALIA-WIDE SHIPPING <span class="marquee-dot"></span></span>
+    <span class="marquee-item">CERTIFIED AUTHENTIC COINS <span class="marquee-dot"></span></span>
+    <span class="marquee-item">30-DAY RETURN GUARANTEE <span class="marquee-dot"></span></span>
+    <span class="marquee-item">QUESTIONS? GET IN TOUCH <span class="marquee-dot"></span></span>
+    <span class="marquee-item">AUSTRALIA-WIDE SHIPPING <span class="marquee-dot"></span></span>
+    <span class="marquee-item">CERTIFIED AUTHENTIC COINS <span class="marquee-dot"></span></span>
+    <span class="marquee-item">30-DAY RETURN GUARANTEE <span class="marquee-dot"></span></span>
+    <span class="marquee-item">QUESTIONS? GET IN TOUCH <span class="marquee-dot"></span></span>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-bg"></div><div class="hero-grid"></div>
+  <div class="hero-deco"></div><div class="hero-deco-inner"></div>
+  <div class="hero-content">
+    <h1>WORLD<br>CLASS <span>COINS</span></h1>
+    <p>Carefully sourced coins and world currency &mdash; from everyday finds to rare collectibles.</p>
+    <button class="btn-primary" onclick="document.querySelector('.shop').scrollIntoView({behavior:'smooth'})">Browse Collection</button>
+    <div class="hero-stats">
+      <div><div class="stat-num"><img src="https://flagcdn.com/w40/au.png" alt="Australia" style="width:48px;height:auto;display:block;margin-bottom:2px;image-rendering:auto;"></div><div class="stat-label">Based in Australia</div></div>
+      <div><div class="stat-num">100%</div><div class="stat-label">Authenticated</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="filter-bar">
+  <div class="filter-tabs">
+    <button class="filter-tab active" onclick="filterCoins('all',this)">All</button>
+    <button class="filter-tab" onclick="filterCoins('rare',this)">Rare &amp; Collectible</button>
+    <button class="filter-tab" onclick="filterCoins('foreign',this)">Foreign Currency</button>
+  </div>
+  <div class="filter-right">
+    <input class="search-input" type="text" placeholder="Search coins..." oninput="searchCoins(this.value)">
+    <select class="sort-select" onchange="sortCoins(this.value)">
+      <option value="newest">NEWEST FIRST</option>
+      <option value="price-asc">PRICE: LOW</option>
+      <option value="price-desc">PRICE: HIGH</option>
+      <option value="name">A TO Z</option>
+    </select>
+  </div>
+</div>
+
+<section class="shop">
+  <div class="shop-header"><h2>COLLECTION</h2><span class="shop-count" id="shop-count">0 items</span></div>
+  <div class="grid" id="product-grid"></div>
+</section>
+
+
+<!-- SELL SECTION -->
+<section class="sell-section" id="sell-section" style="display:none">
+  <div class="sell-section-inner">
+    <div class="sell-header">
+      <h2>SELL YOUR<br><span>COINS</span></h2>
+      <p>Have coins you'd like to sell? Submit what you know &mdash; even just a photo and a rough description is enough to get started. We're happy to help identify and value your coin, no expertise needed.</p>
+    </div>
+    <div class="sell-steps">
+      <div class="sell-step"><div class="sell-step-num">01</div><div class="sell-step-label">Submit What You Know</div><div class="sell-step-sub">A photo and rough description is all you need &mdash; we'll figure out the rest</div></div>
+      <div class="sell-step"><div class="sell-step-num">02</div><div class="sell-step-label">We Help &amp; Assess</div><div class="sell-step-sub">We identify your coin if needed and come back with a fair offer</div></div>
+      <div class="sell-step"><div class="sell-step-num">03</div><div class="sell-step-label">Get Paid</div><div class="sell-step-sub">Accept the offer and receive payment quickly</div></div>
+    </div>
+    <div class="sell-form">
+      <div class="sell-form-title">SUBMIT A COIN</div><div style="background:rgba(240,192,64,.07);border:1px solid rgba(240,192,64,.2);padding:14px 18px;margin-bottom:24px;font-size:13px;line-height:1.7;"><strong style="color:var(--accent)">Don't worry if you're not sure about the details.</strong> Only your name, email and a description are required &mdash; everything else helps but isn't essential. If you're unsure what you have, just describe it as best you can and upload a photo. We'll take it from there.</div>
+
+      <div class="form-section-label" style="margin-top:0">Photos</div>
+      <div class="sell-photo-grid">
+        <div class="sell-photo-slot">
+          <input type="file" accept="image/*" onchange="sellPreview(this,'sell-img-0')">
+          <img id="sell-img-0" alt="Photo 1">
+          <div class="upload-icon" id="sell-ph-0">+</div>
+          <div class="slot-label">Front</div>
+        </div>
+        <div class="sell-photo-slot">
+          <input type="file" accept="image/*" onchange="sellPreview(this,'sell-img-1')">
+          <img id="sell-img-1" alt="Photo 2">
+          <div class="upload-icon" id="sell-ph-0b">+</div>
+          <div class="slot-label">Back</div>
+        </div>
+        <div class="sell-photo-slot">
+          <input type="file" accept="image/*" onchange="sellPreview(this,'sell-img-2')">
+          <img id="sell-img-2" alt="Photo 3">
+          <div class="upload-icon" id="sell-ph-0c">+</div>
+          <div class="slot-label">Other</div>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:4px">Photos really help but aren't required. Even a blurry phone photo is better than nothing &mdash; front and back if you can.</p>
+
+      <div class="form-section-label">About the Coin</div>
+      <div class="form-group"><label class="form-label">Coin Name / Description * <span style="font-weight:400;color:var(--muted)">(describe it as best you can)</span></label><input class="form-input" id="sell-name" type="text" placeholder="e.g. Old silver coin, Australian, not sure of year"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Country of Origin <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input class="form-input" id="sell-country" type="text" placeholder="e.g. Australia"></div>
+        <div class="form-group"><label class="form-label">Year <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input class="form-input" id="sell-year" type="text" placeholder="e.g. 1930"></div>
+      </div>
+      <div class="form-row" style="margin-top:0">
+        <div class="form-group"><label class="form-label">Quantity <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input class="form-input" id="sell-qty" type="number" min="1" value="1" placeholder="1"></div>
+        <div class="form-group"><label class="form-label">Condition <span style="font-weight:400;color:var(--muted)">(optional, don't worry if unsure)</span></label>
+          <select class="form-input" id="sell-condition">
+            <option value="">Not sure</option>
+            <option value="Poor">Poor</option>
+            <option value="Fair">Fair</option>
+            <option value="Good">Good</option>
+            <option value="Very Good">Very Good</option>
+            <option value="Fine">Fine</option>
+            <option value="Very Fine">Very Fine</option>
+            <option value="Extremely Fine">Extremely Fine</option>
+            <option value="Uncirculated">Uncirculated</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px"><label class="form-label">Anything Else? <span style="font-weight:400;color:var(--muted)">(optional)</span></label><textarea class="form-input" id="sell-notes" placeholder="How did you come across it? Any markings, defects, or anything else you've noticed..."></textarea></div>
+
+      <div class="form-section-label">Your Details</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Your Name *</label><input class="form-input" id="sell-sender-name" type="text" placeholder="Jane Smith"></div>
+        <div class="form-group"><label class="form-label">Email Address *</label><input class="form-input" id="sell-sender-email" type="email" placeholder="jane@email.com"></div>
+      </div>
+
+      <div style="margin-top:24px">
+        <button class="btn-full" onclick="submitSellForm()">Send Us Your Coin &rarr;</button>
+        <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">We'll get back to you within a few days &mdash; and we're happy to answer any questions along the way.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DETAIL MODAL -->
+<div class="detail-overlay" id="detail-overlay" onclick="if(event.target.id==='detail-overlay')closeDetail()">
+  <div class="detail-modal" id="detail-modal"></div>
+</div>
+
+<!-- CART -->
+<div class="cart-overlay" id="cart-overlay" onclick="if(event.target.id==='cart-overlay')toggleCart()">
+  <div class="cart-drawer">
+    <div class="cart-header">
+      <div class="cart-title">YOUR CART</div>
+      <button class="cart-close" onclick="toggleCart()">&#x2715;</button>
+    </div>
+    <div class="cart-items" id="cart-items"></div>
+    <div class="cart-footer">
+      <div class="cart-line"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+      <div class="cart-line"><span>Shipping</span><span id="cart-shipping">Selected at checkout</span></div>
+      <div class="cart-total">
+        <span class="cart-total-label">SUBTOTAL</span>
+        <span class="cart-total-price" id="cart-total">$0.00</span>
+      </div>
+      <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkout-modal" onclick="if(event.target.id==='checkout-modal')closeModal('checkout-modal')">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <div class="modal-title" id="checkout-modal-title">CHECKOUT</div>
+      <button class="modal-close" onclick="closeModal('checkout-modal')">&#x2715;</button>
+    </div>
+    <div class="modal-body" id="checkout-body"></div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="login-modal" onclick="if(event.target.id==='login-modal')closeModal('login-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">ADMIN LOGIN</div>
+      <button class="modal-close" onclick="closeModal('login-modal')">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="admin-password" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')tryLogin()">
+        <div class="form-error" id="login-error">Incorrect password. Try again.</div>
+      </div>
+      <button class="btn-full" onclick="tryLogin()">Enter Admin Panel</button>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">Default password: <code style="color:var(--accent);font-family:var(--font-mono)">coins123</code></p>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-overlay" id="admin-panel">
+  <div class="admin-header">
+    <div class="admin-title">MINT LEDGER ADMIN</div>
+    <div class="admin-header-right">
+      <button class="btn-secondary" onclick="closeAdmin()">Back to Shop</button>
+      <button class="btn-secondary btn-danger" onclick="logoutAdmin()">Logout</button>
+    </div>
+  </div>
+  <div class="admin-body">
+    <div class="admin-sidebar">
+      <div class="admin-sidebar-section">
+        <div class="admin-sidebar-label">Overview</div>
+        <div class="sidebar-stat"><span>Total Coins</span><span class="sidebar-stat-val" id="stat-total">0</span></div>
+        <div class="sidebar-stat"><span>Rare</span><span class="sidebar-stat-val" id="stat-rare">0</span></div>
+        <div class="sidebar-stat"><span>Foreign</span><span class="sidebar-stat-val" id="stat-foreign">0</span></div>
+        <div class="sidebar-stat"><span>In Stock</span><span class="sidebar-stat-val" id="stat-stock">0</span></div>
+      </div>
+      <div class="admin-sidebar-section">
+        <button class="add-coin-btn" onclick="showAddForm()">+ Add New Coin</button>
+      </div>
+      <div class="admin-coin-list-label">Your Coins</div>
+      <div class="admin-coin-list" id="admin-coin-list"></div>
+    </div>
+    <div class="admin-main" id="admin-main">
+      <div class="admin-welcome">
+        <div class="admin-welcome-icon">&#x1FA99;</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">Welcome to the Admin Panel</div>
+        <div>Click &ldquo;+ Add New Coin&rdquo; or select a coin to edit.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var STORAGE_KEY='mintledger_coins', PASS_KEY='mintledger_pass', AUTH_KEY='mintledger_auth', DEFAULT_PASS='coins123';
+
+// Sign up free at formspree.io, create a form, then replace YOUR_FORMSPREE_ID below
+var FORMSPREE_ID = 'YOUR_FORMSPREE_ID';
+
+var SHIPPING_OPTIONS = [
+  {id:'regular',  label:'Regular Post',  desc:'3-7 business days \u2014 Untracked',            price:1.70},
+  {id:'priority', label:'Priority Post', desc:'Up to 4 business days \u2014 Slightly faster',  price:2.70},
+  {id:'express',  label:'Express Post',  desc:'1-3 business days \u2014 Tracked',              price:9.00},
+];
+
+var TAG_DEFS = [
+  {key:'proof',      label:'Proof',       cls:'badge-proof'},
+  {key:'lowMintage', label:'Low Mintage', cls:'badge-low-mintage'},
+  {key:'errorCoin',  label:'Error Coin',  cls:'badge-error'},
+  {key:'foreign',    label:'Foreign',     cls:'badge-foreign'},
+  {key:'onSale',     label:'On Sale',     cls:'badge-on-sale'},
+];
+
+function getPassword(){return localStorage.getItem(PASS_KEY)||DEFAULT_PASS;}
+function isAuthed(){return sessionStorage.getItem(AUTH_KEY)==='1';}
+function setAuthed(){sessionStorage.setItem(AUTH_KEY,'1');}
+function clearAuthed(){sessionStorage.removeItem(AUTH_KEY);}
+function getCoins(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}catch(e){return[];}}
+function saveCoins(c){localStorage.setItem(STORAGE_KEY,JSON.stringify(c));}
+function fmt(n){return '$'+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+
+var coins=getCoins(), cart={}, activeFilter='all', searchTerm='', sortMode='newest', editingId=null;
+var selectedShipping=null, selectedLocation=null, detailFlipped=false;
+
+/* ── SHOP ── */
+function getFiltered(){
+  var list=coins.slice();
+  if(activeFilter!=='all') list=list.filter(function(c){return c.category===activeFilter;});
+  if(searchTerm){var s=searchTerm.toLowerCase();list=list.filter(function(c){return c.name.toLowerCase().indexOf(s)>-1||(c.country||'').toLowerCase().indexOf(s)>-1||(c.year||'').toLowerCase().indexOf(s)>-1;});}
+  if(sortMode==='price-asc') list.sort(function(a,b){return a.price-b.price;});
+  else if(sortMode==='price-desc') list.sort(function(a,b){return b.price-a.price;});
+  else if(sortMode==='name') list.sort(function(a,b){return a.name.localeCompare(b.name);});
+  else list=list.slice().reverse();
+  return list;
+}
+
+function renderShop(){
+  var list=getFiltered();
+  var sc=document.getElementById('shop-count');
+  var hc=document.getElementById('hero-count');
+  var grid=document.getElementById('product-grid');
+  if(!sc||!hc||!grid) return;
+  sc.textContent=list.length+' item'+(list.length!==1?'s':'');
+  hc.textContent=coins.length||'0';
+  if(!list.length){
+    grid.innerHTML='<div class="empty-state"><div class="empty-state-icon">&#x1FA99;</div><div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px">'+(coins.length?'No coins match':'No coins yet')+'</div><div>'+(coins.length?'Try a different filter.':'Head to Admin to add your first coin.')+'</div></div>';
+    return;
+  }
+  grid.innerHTML=list.map(function(coin){
+    var soldOut=Number(coin.stock)===0;
+    var inCart=cart[coin.id]||0;
+    var badges=(soldOut?'<span class="card-badge badge-sold">Sold Out</span>':'')+
+      (coin.tags||[]).map(function(t){var d=TAG_DEFS.find(function(x){return x.key===t;});return d?'<span class="card-badge '+d.cls+'">'+d.label+'</span>':'';}).join('');
+    var img='';
+    if(coin.obverse&&coin.reverse){
+      img='<div class="photo-pair"><img class="photo-obverse" src="'+coin.obverse+'" loading="lazy" alt="front"><img class="photo-reverse" src="'+coin.reverse+'" loading="lazy" alt="back"></div><div class="flip-hint">Hover to flip</div>';
+    } else if(coin.obverse){
+      img='<img class="single-photo" src="'+coin.obverse+'" loading="lazy" alt="'+coin.name+'">';
+    } else {
+      img='<div class="coin-placeholder">&#x1FA99;</div>';
+    }
+    var meta=[
+      coin.grade?'<div class="meta-item">Grade<span>'+coin.grade+'</span></div>':'',
+      coin.mint?'<div class="meta-item">Mint<span>'+coin.mint+'</span></div>':'',
+      (coin.stock!=null)?'<div class="meta-item">Stock<span>'+(coin.stock==1?'1 Left!':coin.stock)+'</span></div>':'',
+    ].filter(Boolean).join('');
+    var btnDisabled=soldOut||inCart>0;
+    var btnText=soldOut?'Sold Out':(inCart?'In Cart':'+ Add');
+    return '<div class="card'+(soldOut?' sold-out':'')+'" onclick="openDetail(\''+coin.id+'\')">'
+      +'<div class="card-badges">'+badges+'</div>'
+      +'<div class="card-img">'+img+'</div>'
+      +'<div class="card-body">'
+      +'<div class="card-category">'+(coin.country||'')+' &middot; '+(coin.category==='rare'?'Rare Collectible':'Foreign Currency')+'</div>'
+      +'<div class="card-name">'+coin.name+'</div>'
+      +'<div class="card-year">'+[coin.year,coin.grade].filter(Boolean).join(' &middot; ')+'</div>'
+      +(meta?'<div class="card-meta">'+meta+'</div>':'')
+      +(coin.description?'<div class="card-desc">'+coin.description+'</div>':'')
+      +'<div class="card-footer">'
+      +'<div><div class="card-price">'+fmt(coin.price)+'</div><div class="card-price-sub">AUD + shipping</div></div>'
+      +'<button class="add-btn" onclick="addToCart(\''+coin.id+'\',event)" '+(btnDisabled?'disabled':'')+'>'+btnText+'</button>'
+      +'</div></div></div>';
+  }).join('');
+}
+
+function showShop(){
+  document.querySelector('.shop').style.display='block';
+  document.querySelector('.filter-bar').style.display='flex';
+  document.getElementById('sell-section').style.display='none';
+}
+
+function filterCoins(cat,btn){showShop();
+  activeFilter=cat;
+  document.querySelectorAll('.filter-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('nav a').forEach(function(t){t.classList.remove('active');});
+  if(btn) btn.classList.add('active');
+  renderShop();
+}
+function searchCoins(v){searchTerm=v;renderShop();}
+function sortCoins(v){sortMode=v;renderShop();}
+
+/* ── CART ── */
+function addToCart(id,e){
+  if(e) e.stopPropagation();
+  var c=coins.find(function(x){return x.id===id;}); if(!c) return;
+  var inCart=cart[id]||0, stock=Number(c.stock)||0;
+  if(inCart>=stock){showToast('No more stock available');return;}
+  cart[id]=inCart+1; updateCartUI(); renderShop();
+  showToast(c.name+' added to cart');
+}
+function removeFromCart(id){delete cart[id];updateCartUI();renderShop();}
+function changeQty(id,d){
+  var c=coins.find(function(x){return x.id===id;});
+  var stock=c?Number(c.stock):0, newQty=(cart[id]||0)+d;
+  if(newQty<=0){delete cart[id];}
+  else if(newQty>stock){showToast('No more stock available');return;}
+  else{cart[id]=newQty;}
+  updateCartUI();renderShop();
+}
+function updateCartUI(){
+  var total=Object.values(cart).reduce(function(s,v){return s+v;},0);
+  document.getElementById('cart-count').textContent=total;
+  var items=document.getElementById('cart-items'), keys=Object.keys(cart);
+  if(!keys.length){
+    items.innerHTML='<div class="cart-empty"><div class="cart-empty-icon">&#x1FA99;</div><div>Your cart is empty</div></div>';
+    document.getElementById('cart-subtotal').textContent='$0.00';
+    document.getElementById('cart-shipping').textContent='Selected at checkout';
+    document.getElementById('cart-total').textContent='$0.00';
+    return;
+  }
+  var sub=0;
+  items.innerHTML=keys.map(function(id){
+    var c=coins.find(function(x){return x.id===id;}); if(!c) return '';
+    var qty=cart[id]; sub+=c.price*qty;
+    var th=c.obverse?'<img class="cart-thumb" src="'+c.obverse+'" alt="'+c.name+'">'
+      :'<div class="cart-thumb-ph">&#x1FA99;</div>';
+    return '<div class="cart-item">'+th
+      +'<div class="cart-item-info">'
+      +'<div class="cart-item-name">'+c.name+'</div>'
+      +'<div class="cart-item-sub">'+[c.year,c.grade].filter(Boolean).join(' &middot; ')+'</div>'
+      +'<div class="cart-item-controls">'
+      +'<button class="qty-btn" onclick="changeQty(\''+id+'\',-1)">&minus;</button>'
+      +'<span class="qty-val">'+qty+'</span>'
+      +'<button class="qty-btn" onclick="changeQty(\''+id+'\',1)">+</button>'
+      +'</div></div>'
+      +'<div class="cart-item-price">'+fmt(c.price*qty)+'</div>'
+      +'<button class="cart-remove" onclick="removeFromCart(\''+id+'\')">&times;</button>'
+      +'</div>';
+  }).join('');
+  document.getElementById('cart-subtotal').textContent=fmt(sub);
+  document.getElementById('cart-shipping').textContent='Selected at checkout';
+  document.getElementById('cart-total').textContent=fmt(sub);
+}
+function toggleCart(){document.getElementById('cart-overlay').classList.toggle('open');}
+
+/* ── DETAIL MODAL ── */
+function openDetail(id){
+  var coin=coins.find(function(c){return c.id===id;}); if(!coin) return;
+  detailFlipped=false;
+  var soldOut=Number(coin.stock)===0;
+  var tagHTML=(coin.tags||[]).map(function(t){
+    var d=TAG_DEFS.find(function(x){return x.key===t;});
+    return d?'<span class="card-badge '+d.cls+'" style="position:static">'+d.label+'</span>':'';
+  }).join('');
+  var hasFlip=!!(coin.obverse&&coin.reverse);
+  var imgHTML='';
+  if(hasFlip){
+    imgHTML='<img class="photo-obverse" src="'+coin.obverse+'" alt="Obverse">'
+      +'<img class="photo-reverse" src="'+coin.reverse+'" alt="Reverse">'
+      +'<div class="detail-flip-hint">Click to flip &harr;</div>';
+  } else if(coin.obverse){
+    imgHTML='<img class="photo-obverse" src="'+coin.obverse+'" alt="'+coin.name+'" style="opacity:1">';
+  } else {
+    imgHTML='<div class="coin-placeholder" style="background:radial-gradient(circle at 35% 32%,#d4a830,#8a6818)">&#x1FA99;</div>';
+  }
+  var metaItems=[
+    coin.year?'<div class="detail-meta-item">Year<span>'+coin.year+'</span></div>':'',
+    coin.grade?'<div class="detail-meta-item">Grade<span>'+coin.grade+'</span></div>':'',
+    coin.mint?'<div class="detail-meta-item">Mint<span>'+coin.mint+'</span></div>':'',
+    coin.country?'<div class="detail-meta-item">Origin<span>'+coin.country+'</span></div>':'',
+    '<div class="detail-meta-item">Stock<span>'+(soldOut?'Sold Out':coin.stock+' available')+'</span></div>',
+    '<div class="detail-meta-item">Category<span>'+(coin.category==='rare'?'Rare Collectible':'Foreign Currency')+'</span></div>',
+  ].filter(Boolean).join('');
+  var inCart=cart[id]||0;
+  document.getElementById('detail-modal').innerHTML=
+    '<div class="detail-img" id="detail-img" onclick="flipDetail()" '+(hasFlip?'':'style="cursor:default"')+'>'
+    +imgHTML+'</div>'
+    +'<button class="detail-close" onclick="closeDetail()">&times;</button>'
+    +'<div class="detail-body">'
+    +(tagHTML?'<div class="detail-tags">'+tagHTML+'</div>':'')
+    +'<div class="detail-name">'+coin.name+'</div>'
+    +'<div class="detail-sub">'+[coin.year,coin.grade,coin.country].filter(Boolean).join(' &middot; ')+'</div>'
+    +(metaItems?'<div class="detail-meta-grid">'+metaItems+'</div>':'')
+    +'<div class="detail-desc">'+(coin.description||'<span style="color:var(--border)">No description added.</span>')+'</div>'
+    +'<div class="detail-footer">'
+    +'<div class="detail-price">'+fmt(coin.price)+'</div>'
+    +'<div class="detail-price-sub">AUD + shipping</div>'
+    +(Number(coin.stock)===1&&!soldOut?'<div class="detail-stock-warn">&#9888; Only 1 left!</div>':'')
+    +(soldOut?'':
+        '<div class="detail-qty-row">'
+        +'<span style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px">Qty</span>'
+        +'<button class="qty-btn" style="width:32px;height:32px" onclick="detailChangeQty(\''+id+'\',-1)">&minus;</button>'
+        +'<span id="detail-qty-val" class="qty-val" style="font-size:15px;min-width:28px">'+inCart+'</span>'
+        +'<button class="qty-btn" style="width:32px;height:32px" onclick="detailChangeQty(\''+id+'\',1)">+</button>'
+        +'</div>'
+      )
+    +'<button class="detail-add-btn" id="detail-add-btn-'+id+'" '+(soldOut?'disabled':'')
+    +' onclick="detailAddToCart(\''+id+'\')">'+(soldOut?'Sold Out':(inCart?'In Cart':'Add to Cart'))+'</button>'
+    +'</div></div>';
+  document.getElementById('detail-overlay').classList.add('open');
+}
+function flipDetail(){
+  var img=document.getElementById('detail-img'); if(!img) return;
+  detailFlipped=!detailFlipped;
+  img.classList.toggle('flipped',detailFlipped);
+}
+function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');}
+function detailChangeQty(id,delta){
+  var coin=coins.find(function(x){return x.id===id;}); if(!coin) return;
+  var stock=Number(coin.stock)||0, current=cart[id]||0, next=current+delta;
+  if(next<0) return;
+  if(next>stock){showToast('No more stock available');return;}
+  if(next===0) delete cart[id]; else cart[id]=next;
+  updateCartUI(); renderShop();
+  var el=document.getElementById('detail-qty-val'); if(el) el.textContent=cart[id]||0;
+  var btn=document.getElementById('detail-add-btn-'+id);
+  if(btn) btn.textContent=(cart[id]||0)?'In Cart':'Add to Cart';
+}
+function detailAddToCart(id){
+  var coin=coins.find(function(x){return x.id===id;}); if(!coin) return;
+  var stock=Number(coin.stock)||0, inCart=cart[id]||0;
+  if(inCart>=stock){showToast('No more stock available');return;}
+  cart[id]=inCart+1; updateCartUI(); renderShop();
+  var el=document.getElementById('detail-qty-val'); if(el) el.textContent=cart[id];
+  var btn=document.getElementById('detail-add-btn-'+id); if(btn) btn.textContent='In Cart';
+  showToast(coin.name+' added to cart');
+}
+
+/* ── MODALS ── */
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openModal(id){document.getElementById(id).classList.add('open');}
+
+/* ── AUTH ── */
+function openAdminGate(){
+  if(isAuthed()){openAdmin();return;}
+  document.getElementById('admin-password').value='';
+  document.getElementById('login-error').style.display='none';
+  openModal('login-modal');
+  setTimeout(function(){document.getElementById('admin-password').focus();},200);
+}
+function tryLogin(){
+  if(document.getElementById('admin-password').value===getPassword()){
+    setAuthed();closeModal('login-modal');openAdmin();
+  } else {
+    document.getElementById('login-error').style.display='block';
+    document.getElementById('admin-password').value='';
+    document.getElementById('admin-password').focus();
+  }
+}
+function openAdmin(){document.getElementById('admin-panel').classList.add('open');refreshSidebar();showWelcome();}
+function closeAdmin(){document.getElementById('admin-panel').classList.remove('open');coins=getCoins();renderShop();}
+function logoutAdmin(){clearAuthed();closeAdmin();showToast('Logged out');}
+
+/* ── ADMIN SIDEBAR ── */
+function refreshSidebar(){
+  document.getElementById('stat-total').textContent=coins.length;
+  document.getElementById('stat-rare').textContent=coins.filter(function(c){return c.category==='rare';}).length;
+  document.getElementById('stat-foreign').textContent=coins.filter(function(c){return c.category==='foreign';}).length;
+  document.getElementById('stat-stock').textContent=coins.filter(function(c){return Number(c.stock)>0;}).length;
+  var list=document.getElementById('admin-coin-list');
+  if(!coins.length){list.innerHTML='<div style="padding:20px;font-size:12px;color:var(--muted);text-align:center">No coins yet.</div>';return;}
+  list.innerHTML=coins.slice().reverse().map(function(c){
+    var th=c.obverse?'<img class="admin-coin-thumb" src="'+c.obverse+'" alt="'+c.name+'">'
+      :'<div class="admin-coin-thumb-ph"></div>';
+    return '<div class="admin-coin-item'+(editingId===c.id?' selected':'')+'" onclick="showEditForm(\''+c.id+'\')">'
+      +th+'<div class="admin-coin-info">'
+      +'<div class="admin-coin-name">'+c.name+'</div>'
+      +'<div class="admin-coin-price">'+fmt(c.price)+'</div>'
+      +'</div></div>';
+  }).join('');
+}
+function showWelcome(){
+  editingId=null;
+  document.getElementById('admin-main').innerHTML='<div class="admin-welcome"><div class="admin-welcome-icon">&#x1FA99;</div><div style="font-size:15px;font-weight:600;color:var(--text)">Welcome to the Admin Panel</div><div>Click &ldquo;+ Add New Coin&rdquo; or select a coin to edit.</div></div>';
+  refreshSidebar();
+}
+function showAddForm(){editingId=null;renderForm(null);refreshSidebar();}
+function showEditForm(id){editingId=id;var c=coins.find(function(x){return x.id===id;});renderForm(c);refreshSidebar();}
+
+function renderForm(coin){
+  var v=coin||{};
+  var tagBoxes=TAG_DEFS.map(function(t){
+    var chk=(v.tags||[]).indexOf(t.key)>-1?'checked':'';
+    return '<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);cursor:pointer;background:var(--card);">'
+      +'<input type="checkbox" id="tag-'+t.key+'" value="'+t.key+'" '+chk+' style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer">'
+      +'<span style="font-size:13px;font-weight:500">'+t.label+'</span></label>';
+  }).join('');
+  document.getElementById('admin-main').innerHTML=
+    '<div class="coin-form">'
+    +'<div class="coin-form-title">'+(coin?'EDIT COIN':'ADD NEW COIN')+'</div>'
+    +'<div class="form-section-label" style="margin-top:0">Photos</div>'
+    +'<div class="photo-upload-pair">'
+    +'<div><div class="photo-slot-label">Obverse (Front)</div>'
+    +'<div class="photo-upload-area">'
+    +'<input type="file" accept="image/*" onchange="previewPhoto(this,\'ob-prev\',\'ob-data\')">'
+    +'<img id="ob-prev" class="photo-preview'+(v.obverse?' visible':'')+'" src="'+(v.obverse||'')+'" alt="">'
+    +'<div id="ob-ph" '+(v.obverse?'style="display:none"':'')+'>'+
+    '<div class="upload-icon">+</div><div class="upload-label">Upload Front</div><div class="upload-sub">JPG &middot; PNG &middot; WEBP</div></div>'
+    +'</div><input type="hidden" id="ob-data" value="'+(v.obverse||'')+'"></div>'
+    +'<div><div class="photo-slot-label">Reverse (Back)</div>'
+    +'<div class="photo-upload-area">'
+    +'<input type="file" accept="image/*" onchange="previewPhoto(this,\'rev-prev\',\'rev-data\')">'
+    +'<img id="rev-prev" class="photo-preview'+(v.reverse?' visible':'')+'" src="'+(v.reverse||'')+'" alt="">'
+    +'<div id="rev-ph" '+(v.reverse?'style="display:none"':'')+'>'+
+    '<div class="upload-icon">+</div><div class="upload-label">Upload Back</div><div class="upload-sub">JPG &middot; PNG &middot; WEBP</div></div>'
+    +'</div><input type="hidden" id="rev-data" value="'+(v.reverse||'')+'"></div>'
+    +'</div>'
+    +'<div class="form-section-label">Details</div>'
+    +'<div class="form-group"><label class="form-label">Coin Name *</label>'
+    +'<input class="form-input" id="f-name" type="text" placeholder="e.g. 1894 Australian Florin" value="'+(v.name||'')+'"></div>'
+    +'<div class="form-row">'
+    +'<div class="form-group"><label class="form-label">Category *</label>'
+    +'<select class="form-input" id="f-category">'
+    +'<option value="rare"'+(v.category==='rare'?' selected':'')+'>Rare / Collectible</option>'
+    +'<option value="foreign"'+(v.category==='foreign'?' selected':'')+'>Foreign Currency</option>'
+    +'</select></div>'
+    +'<div class="form-group"><label class="form-label">Country / Origin</label>'
+    +'<input class="form-input" id="f-country" type="text" placeholder="e.g. Australia" value="'+(v.country||'')+'"></div>'
+    +'</div>'
+    +'<div class="form-row" style="margin-top:14px">'
+    +'<div class="form-group"><label class="form-label">Year / Era</label>'
+    +'<input class="form-input" id="f-year" type="text" placeholder="e.g. 1894" value="'+(v.year||'')+'"></div>'
+    +'<div class="form-group"><label class="form-label">Grade</label>'
+    +'<input class="form-input" id="f-grade" type="text" placeholder="e.g. VF-30" value="'+(v.grade||'')+'"></div>'
+    +'</div>'
+    +'<div class="form-row" style="margin-top:14px">'
+    +'<div class="form-group"><label class="form-label">Mint</label>'
+    +'<input class="form-input" id="f-mint" type="text" placeholder="e.g. Melbourne" value="'+(v.mint||'')+'"></div>'
+    +'<div class="form-group"><label class="form-label">Stock Qty</label>'
+    +'<input class="form-input" id="f-stock" type="number" min="0" value="'+(v.stock!=null?v.stock:1)+'"></div>'
+    +'</div>'
+    +'<div class="form-section-label">Pricing</div>'
+    +'<div class="form-group" style="max-width:240px"><label class="form-label">Price (AUD) *</label>'
+    +'<input class="form-input" id="f-price" type="number" min="0" step="0.01" placeholder="0.00" value="'+(v.price||'')+'"></div>'
+    +'<div class="form-section-label">Tags</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px">'+tagBoxes+'</div>'
+    +'<div class="form-section-label">Notes</div>'
+    +'<div class="form-group"><textarea class="form-input" id="f-desc" placeholder="Provenance, condition notes, history...">'+(v.description||'')+'</textarea></div>'
+    +'<div class="form-actions">'
+    +'<button class="btn-full" style="flex:1" onclick="saveCoin()">'+(coin?'&#128190; Save Changes':'+ Add to Shop')+'</button>'
+    +(coin?'<button class="btn-secondary btn-danger" onclick="deleteCoin(\''+coin.id+'\')">&#128465; Delete</button>':'')
+    +'<button class="btn-secondary" onclick="showWelcome()">Cancel</button>'
+    +'</div></div>';
+}
+
+function previewPhoto(input,prevId,dataId){
+  var file=input.files[0]; if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var d=e.target.result;
+    var prev=document.getElementById(prevId);
+    prev.src=d; prev.classList.add('visible');
+    document.getElementById(dataId).value=d;
+    var ph=document.getElementById(prevId.replace('-prev','-ph'));
+    if(ph) ph.style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveCoin(){
+  var name=document.getElementById('f-name').value.trim();
+  var price=parseFloat(document.getElementById('f-price').value);
+  if(!name){showToast('Please enter a coin name');return;}
+  if(isNaN(price)||price<0){showToast('Please enter a valid price');return;}
+  var data={
+    id:editingId||uid(), name:name,
+    category:document.getElementById('f-category').value,
+    country:document.getElementById('f-country').value.trim(),
+    year:document.getElementById('f-year').value.trim(),
+    grade:document.getElementById('f-grade').value.trim(),
+    mint:document.getElementById('f-mint').value.trim(),
+    stock:parseInt(document.getElementById('f-stock').value)||0,
+    price:price,
+    description:document.getElementById('f-desc').value.trim(),
+    tags:TAG_DEFS.map(function(t){return t.key;}).filter(function(k){var el=document.getElementById('tag-'+k);return el&&el.checked;}),
+    obverse:document.getElementById('ob-data').value||null,
+    reverse:document.getElementById('rev-data').value||null,
+  };
+  if(editingId){var i=coins.findIndex(function(c){return c.id===editingId;});if(i!==-1)coins[i]=data;showToast('Coin updated!');}
+  else{coins.push(data);showToast(name+' added to shop!');}
+  saveCoins(coins);renderShop();editingId=data.id;refreshSidebar();
+}
+
+function deleteCoin(id){
+  if(!confirm('Delete this coin from your shop?')) return;
+  coins=coins.filter(function(c){return c.id!==id;});
+  saveCoins(coins);renderShop();showWelcome();showToast('Coin deleted');
+}
+
+/* ── CHECKOUT ── */
+function cartSubtotal(){
+  return Object.keys(cart).reduce(function(s,id){
+    var c=coins.find(function(x){return x.id===id;}); return c?s+c.price*cart[id]:s;
+  },0);
+}
+
+function openCheckout(){
+  if(!Object.keys(cart).length){showToast('Your cart is empty');return;}
+  document.getElementById('cart-overlay').classList.remove('open');
+  selectedShipping=null; selectedLocation=null;
+  renderCountryStep();
+  openModal('checkout-modal');
+}
+
+function selRadioOn(id){return 'width:16px;height:16px;border-radius:50%;border:5px solid var(--accent);flex-shrink:0;box-sizing:border-box;';}
+function selRadioOff(){return 'width:16px;height:16px;border-radius:50%;border:2px solid var(--muted);flex-shrink:0;box-sizing:border-box;';}
+
+function renderCountryStep(){
+  document.getElementById('checkout-modal-title').textContent='CHECKOUT \u2014 LOCATION';
+  var sub=cartSubtotal();
+  var rows=Object.keys(cart).map(function(id){
+    var c=coins.find(function(x){return x.id===id;}); if(!c) return '';
+    return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">'
+      +'<span style="color:var(--muted)">'+c.name+' &times;'+cart[id]+'</span>'
+      +'<span style="font-family:var(--font-mono);color:var(--accent)">'+fmt(c.price*cart[id])+'</span></div>';
+  }).join('');
+  document.getElementById('checkout-body').innerHTML=
+    '<div style="margin-bottom:24px">'
+    +'<div class="form-section-label" style="margin-top:0">Order Summary</div>'
+    +rows
+    +'<div style="display:flex;justify-content:space-between;padding:10px 0;font-size:13px;font-weight:600">'
+    +'<span>Subtotal</span><span style="font-family:var(--font-mono);color:var(--accent)">'+fmt(sub)+'</span></div>'
+    +'</div>'
+    +'<div class="form-section-label">Where are you shipping to?</div>'
+    +'<div id="loc-aus" class="sel-row" onclick="selectLocation(\'aus\')">'
+    +'<div id="radio-loc-aus" class="sel-radio"></div>'
+    +'<div><div style="font-weight:600;font-size:14px">&#127462;&#127482; Australia</div>'
+    +'<div style="font-size:11px;color:var(--muted);margin-top:2px">Regular, Priority or Express Post available</div></div>'
+    +'</div>'
+    +'<div id="loc-intl" class="sel-row" onclick="selectLocation(\'intl\')">'
+    +'<div id="radio-loc-intl" class="sel-radio"></div>'
+    +'<div><div style="font-weight:600;font-size:14px">&#127758; International</div>'
+    +'<div style="font-size:11px;color:var(--muted);margin-top:2px">Outside Australia</div></div>'
+    +'</div>'
+    +'<button class="btn-full" style="margin-top:16px" onclick="confirmLocation()">Continue &rarr;</button>';
+}
+
+function selectLocation(loc){
+  selectedLocation=loc;
+  ['aus','intl'].forEach(function(l){
+    var r=document.getElementById('radio-loc-'+l), row=document.getElementById('loc-'+l);
+    if(r) r.style.cssText=l===loc?selRadioOn():selRadioOff();
+    if(row) row.style.borderColor=l===loc?'var(--accent)':'var(--border)';
+  });
+}
+
+function confirmLocation(){
+  if(!selectedLocation){showToast('Please select your location');return;}
+  if(selectedLocation==='intl'){
+    document.getElementById('checkout-modal-title').textContent='AUSTRALIA ONLY';
+    document.getElementById('checkout-body').innerHTML=
+      '<div style="text-align:center;padding:32px 20px">'
+      +'<div style="font-size:44px;margin-bottom:16px">&#127758;</div>'
+      +'<div style="font-family:var(--font-display);font-size:26px;letter-spacing:2px;margin-bottom:12px">AUSTRALIA ONLY</div>'
+      +'<p style="color:var(--muted);font-size:14px;line-height:1.7;max-width:340px;margin:0 auto 24px">'
+      +'Sorry &mdash; we currently only ship within Australia. International shipping may be available in the future.<br><br>'
+      +'To enquire, get in touch at <a href="mailto:hello@the'+'mintledger.com.au" style="color:var(--accent)">hello@the'+'mintledger.com.au</a>.</p>'
+      +'<div style="display:flex;gap:10px;justify-content:center">'
+      +'<button class="btn-secondary" onclick="renderCountryStep()">&larr; Back</button>'
+      +'<button class="btn-full" style="max-width:180px" onclick="closeModal(\'checkout-modal\')">Back to Shop</button>'
+      +'</div></div>';
+    return;
+  }
+  renderCheckoutStep1();
+}
+
+function renderCheckoutStep1(){
+  document.getElementById('checkout-modal-title').textContent='CHECKOUT \u2014 SHIPPING';
+  var sub=cartSubtotal();
+  var rows=SHIPPING_OPTIONS.map(function(opt){
+    return '<div id="ship-row-'+opt.id+'" class="sel-row" onclick="selectShipping(\''+opt.id+'\')">'
+      +'<div id="radio-'+opt.id+'" class="sel-radio"></div>'
+      +'<div style="flex:1"><div style="font-weight:600;font-size:14px">'+opt.label+'</div>'
+      +'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+opt.desc+'</div></div>'
+      +'<div style="font-family:var(--font-display);font-size:22px;color:var(--accent)">'+fmt(opt.price)+'</div>'
+      +'</div>';
+  }).join('');
+  document.getElementById('checkout-body').innerHTML=
+    '<div class="form-section-label" style="margin-top:0">Choose Shipping</div>'
+    +rows
+    +'<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--border);margin-bottom:16px">'
+    +'<span style="font-family:var(--font-display);font-size:18px;letter-spacing:1px">TOTAL</span>'
+    +'<span style="font-family:var(--font-display);font-size:28px;color:var(--accent)" id="checkout-total">'+fmt(sub)+'</span>'
+    +'</div>'
+    +'<div style="display:flex;gap:10px">'
+    +'<button class="btn-secondary" onclick="renderCountryStep()">&larr; Back</button>'
+    +'<button class="btn-full" style="flex:1" onclick="goToCheckoutStep2()">Continue &rarr; Enter Details</button>'
+    +'</div>';
+}
+
+function selectShipping(id){
+  selectedShipping=id;
+  SHIPPING_OPTIONS.forEach(function(opt){
+    var r=document.getElementById('radio-'+opt.id), row=document.getElementById('ship-row-'+opt.id);
+    if(r) r.style.cssText=opt.id===id?selRadioOn():selRadioOff();
+    if(row) row.style.borderColor=opt.id===id?'var(--accent)':'var(--border)';
+  });
+  var opt=SHIPPING_OPTIONS.find(function(o){return o.id===id;});
+  var el=document.getElementById('checkout-total');
+  if(el&&opt) el.textContent=fmt(cartSubtotal()+opt.price);
+}
+
+function goToCheckoutStep2(){
+  if(!selectedShipping){showToast('Please select a shipping option');return;}
+  var opt=SHIPPING_OPTIONS.find(function(o){return o.id===selectedShipping;});
+  var sub=cartSubtotal(), total=sub+opt.price;
+  document.getElementById('checkout-modal-title').textContent='CHECKOUT \u2014 YOUR DETAILS';
+  document.getElementById('checkout-body').innerHTML=
+    '<div class="form-group"><label class="form-label">Full Name *</label>'
+    +'<input class="form-input" id="co-name" type="text" placeholder="Jane Smith"></div>'
+    +'<div class="form-group"><label class="form-label">Email Address *</label>'
+    +'<input class="form-input" id="co-email" type="email" placeholder="jane@email.com"></div>'
+    +'<div class="form-group"><label class="form-label">Street Address *</label>'
+    +'<input class="form-input" id="co-addr" type="text" placeholder="123 Example St"></div>'
+    +'<div class="form-row">'
+    +'<div class="form-group" style="margin-bottom:0"><input class="form-input" id="co-suburb" type="text" placeholder="Suburb"></div>'
+    +'<div class="form-group" style="margin-bottom:0"><input class="form-input" id="co-state" type="text" placeholder="State"></div>'
+    +'</div>'
+    +'<div class="form-row" style="margin-top:6px">'
+    +'<div class="form-group" style="margin-bottom:0"><input class="form-input" id="co-postcode" type="text" placeholder="Postcode"></div>'
+    +'<div class="form-group" style="margin-bottom:0"><input class="form-input" id="co-country" type="text" value="Australia" readonly style="color:var(--muted)"></div>'
+    +'</div>'
+    +'<div style="margin:20px 0;padding:14px 16px;background:var(--card);border:1px solid var(--border);font-size:13px">'
+    +'<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--muted)">Coins</span><span style="font-family:var(--font-mono)">'+fmt(sub)+'</span></div>'
+    +'<div style="display:flex;justify-content:space-between;margin-bottom:10px"><span style="color:var(--muted)">'+opt.label+'</span><span style="font-family:var(--font-mono)">'+fmt(opt.price)+'</span></div>'
+    +'<div style="display:flex;justify-content:space-between;font-family:var(--font-display);font-size:20px;padding-top:10px;border-top:1px solid var(--border)">'
+    +'<span>TOTAL (AUD)</span><span style="color:var(--accent)">'+fmt(total)+'</span></div></div>'
+    +'<p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">'
+    +'After submitting you will receive a <strong style="color:var(--text)">PayPal invoice</strong> at your email. '
+    +'Your order ships once payment is confirmed.</p>'
+    +'<div style="display:flex;gap:10px">'
+    +'<button class="btn-secondary" onclick="renderCheckoutStep1()">&larr; Back</button>'
+    +'<button class="btn-full" style="flex:1" onclick="submitOrder(\''+selectedShipping+'\','+total+')">Place Order</button>'
+    +'</div>';
+}
+
+function submitOrder(shippingId,total){
+  var name=document.getElementById('co-name').value.trim();
+  var email=document.getElementById('co-email').value.trim();
+  var addr=document.getElementById('co-addr').value.trim();
+  var suburb=document.getElementById('co-suburb').value.trim();
+  var state=document.getElementById('co-state').value.trim();
+  var postcode=document.getElementById('co-postcode').value.trim();
+  if(!name||!email||!addr||!suburb||!postcode){showToast('Please fill in all required fields');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Please enter a valid email');return;}
+  var opt=SHIPPING_OPTIONS.find(function(o){return o.id===shippingId;});
+  var itemLines=Object.keys(cart).map(function(id){
+    var c=coins.find(function(x){return x.id===id;}); if(!c) return '';
+    return '- '+c.name+' x'+cart[id]+' = '+fmt(c.price*cart[id]);
+  }).filter(Boolean).join('\n');
+  var message='NEW ORDER\n\nCustomer: '+name+'\nEmail: '+email
+    +'\nAddress: '+addr+', '+suburb+' '+state+' '+postcode+', Australia'
+    +'\n\nItems:\n'+itemLines
+    +'\n\nShipping: '+opt.label+' '+fmt(opt.price)
+    +'\nORDER TOTAL (AUD): '+fmt(total)
+    +'\n\nPlease send a PayPal invoice to: '+email;
+
+  document.getElementById('checkout-body').innerHTML=
+    '<div style="text-align:center;padding:48px 20px">'
+    +'<div style="font-size:44px;margin-bottom:16px">&#8987;</div>'
+    +'<div style="font-family:var(--font-display);font-size:22px;letter-spacing:2px">SENDING ORDER...</div>'
+    +'</div>';
+
+  var snapshotLines=itemLines, snapshotOpt=opt;
+
+  function doConfirm(){
+    Object.keys(cart).forEach(function(id){
+      var idx=coins.findIndex(function(x){return x.id===id;});
+      if(idx!==-1) coins[idx].stock=Math.max(0,(Number(coins[idx].stock)||0)-cart[id]);
+    });
+    saveCoins(coins); renderShop();
+    cart={}; updateCartUI();
+    document.getElementById('checkout-modal-title').textContent='ORDER PLACED!';
+    document.getElementById('checkout-body').innerHTML=
+      '<div style="text-align:center;padding:20px 0">'
+      +'<div style="font-size:52px;margin-bottom:16px">&#x1FA99;</div>'
+      +'<div style="font-family:var(--font-display);font-size:28px;letter-spacing:2px;color:var(--accent);margin-bottom:12px">THANKS, '+name.split(' ')[0].toUpperCase()+'!</div>'
+      +'<p style="color:var(--muted);font-size:14px;line-height:1.7;max-width:380px;margin:0 auto 24px">'
+      +'Your order is confirmed. A <strong style="color:var(--text)">PayPal invoice</strong> will be sent to '
+      +'<strong style="color:var(--text)">'+email+'</strong> shortly. Your coins will be dispatched once payment is received.</p>'
+      +'<div style="background:var(--card);border:1px solid var(--border);padding:16px;text-align:left;margin-bottom:24px;font-size:12px;font-family:var(--font-mono);white-space:pre-line;color:var(--muted)">'
+      +snapshotLines+'\n\n'+snapshotOpt.label+': '+fmt(snapshotOpt.price)+'\nTOTAL: '+fmt(total)+'</div>'
+      +'<button class="btn-full" onclick="closeModal(\'checkout-modal\')">Back to Shop</button>'
+      +'</div>';
+  }
+
+  if(FORMSPREE_ID!=='YOUR_FORMSPREE_ID'){
+    fetch('https://formspree.io/f/'+FORMSPREE_ID,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:name,email:email,_subject:'New Order from '+name,message:message})
+    }).then(doConfirm).catch(function(){
+      document.getElementById('checkout-body').innerHTML=
+        '<div style="text-align:center;padding:40px;color:var(--accent2)">Something went wrong. Please try again.</div>'
+        
+        +'<button class="btn-full" onclick="goToCheckoutStep2()">&larr; Try Again</button>';
+    });
+  } else {
+    setTimeout(doConfirm,800);
+  }
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2400);
+}
+
+/* ── SELL SECTION ── */
+var sellImgData=['','',''];
+
+function openSellSection(e){
+  document.querySelector('.shop').style.display='none';
+  document.querySelector('.filter-bar').style.display='none';
+  document.getElementById('sell-section').style.display='block';
+  document.getElementById('sell-section').scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('nav a').forEach(function(a){a.classList.remove('active');});
+  if(e&&e.target) e.target.classList.add('active');
+}
+
+
+function sellPreview(input,imgId){
+  var file=input.files[0]; if(!file) return;
+  var idx=parseInt(imgId.slice(-1));
+  var reader=new FileReader();
+  reader.onload=function(e){
+    sellImgData[idx]=e.target.result;
+    var img=document.getElementById(imgId);
+    img.src=e.target.result; img.classList.add('visible');
+  };
+  reader.readAsDataURL(file);
+}
+
+function submitSellForm(){
+  var name=document.getElementById('sell-name').value.trim();
+  var senderName=document.getElementById('sell-sender-name').value.trim();
+  var senderEmail=document.getElementById('sell-sender-email').value.trim();
+  if(!name){showToast('Please describe the coin');return;}
+  if(!senderName){showToast('Please enter your name');return;}
+  if(!senderEmail||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(senderEmail)){showToast('Please enter a valid email');return;}
+  var country=document.getElementById('sell-country').value.trim();
+  var year=document.getElementById('sell-year').value.trim();
+  var qty=document.getElementById('sell-qty').value||'1';
+  var condition=document.getElementById('sell-condition').value||'Not specified';
+  var notes=document.getElementById('sell-notes').value.trim();
+  var message='COIN SUBMISSION FOR ASSESSMENT'
+    +'\n\nFrom: '+senderName+' ('+senderEmail+')'
+    +'\n\nCoin: '+name
+    +(country?'\nCountry: '+country:'')
+    +(year?'\nYear: '+year:'')
+    +'\nQuantity: '+qty
+    +'\nCondition: '+condition
+    +(notes?'\n\nNotes: '+notes:'')
+    +'\n\nPlease reply to: '+senderEmail;
+  var btn=document.querySelector('#sell-section .btn-full');
+  if(btn){btn.textContent='Sending...';btn.disabled=true;}
+  function doSellConfirm(){
+    document.querySelector('.sell-form').innerHTML=
+      '<div style="text-align:center;padding:48px 20px">'
+      +'<div style="font-size:52px;margin-bottom:16px">&#x1FA99;</div>'
+      +'<div style="font-family:var(--font-display);font-size:28px;letter-spacing:2px;color:var(--accent);margin-bottom:12px">SUBMISSION RECEIVED!</div>'
+      +'<p style="color:var(--muted);font-size:14px;line-height:1.7;max-width:380px;margin:0 auto 24px">'
+      +'Thanks '+senderName.split(' ')[0]+'! We\'ll review your coin and get back to you at '
+      +'<strong style="color:var(--text)">'+senderEmail+'</strong> within a few days. Feel free to reply to our email if you have any questions in the meantime.</p>'
+      +'<button class="btn-full" style="max-width:240px;margin:0 auto" onclick="location.reload()">Submit Another Coin</button>'
+      +'</div>';
+  }
+  if(FORMSPREE_ID!=='YOUR_FORMSPREE_ID'){
+    fetch('https://formspree.io/f/'+FORMSPREE_ID,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:senderName,email:senderEmail,_subject:'Coin Submission from '+senderName,message:message})
+    }).then(doSellConfirm).catch(function(){
+      showToast('Something went wrong. Please try again.');
+      if(btn){btn.textContent='Send Us Your Coin';btn.disabled=false;}
+    });
+  } else {
+    setTimeout(doSellConfirm,800);
+  }
+}
+
+renderShop();
+updateCartUI();
+</script>
+</body>
+</html>
