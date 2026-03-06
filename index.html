@@ -559,15 +559,39 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
 
 <!-- CROP MODAL -->
 <style>
-#crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1100;display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;}
+#crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1100;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:20px;}
 #crop-overlay.open{display:flex;}
-#crop-container{position:relative;width:320px;height:320px;overflow:hidden;cursor:grab;background:#000;border-radius:50%;box-shadow:0 0 0 4px var(--accent),0 0 60px rgba(240,192,64,.3);flex-shrink:0;}
+#crop-container{position:relative;width:320px;height:320px;overflow:hidden;cursor:grab;background:#000;box-shadow:0 0 0 3px var(--accent),0 0 60px rgba(240,192,64,.3);flex-shrink:0;transition:border-radius .25s;}
+#crop-container.shape-circle{border-radius:50%;}
+#crop-container.shape-square{border-radius:6px;}
+#crop-container.shape-rect{border-radius:6px;width:360px;height:240px;}
 #crop-img{position:absolute;top:0;left:0;user-select:none;-webkit-user-select:none;display:block;}
+.crop-shape-btns{display:flex;gap:8px;}
+.crop-shape-btn{background:var(--card);border:2px solid var(--border);color:var(--muted);padding:8px 16px;font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.crop-shape-btn:hover{border-color:var(--accent);color:var(--text);}
+.crop-shape-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(240,192,64,.08);}
+.crop-shape-icon{font-size:20px;line-height:1;}
+.crop-shape-note{font-size:10px;color:var(--accent);opacity:0;transition:opacity .2s;}
+.crop-shape-btn.active .crop-shape-note{opacity:1;}
 </style>
 <div id="crop-overlay">
   <div style="font-family:var(--font-display);font-size:22px;letter-spacing:3px;color:var(--accent)">POSITION YOUR COIN</div>
-  <div style="font-size:12px;color:var(--muted);margin-top:-12px">Drag to reposition &middot; Scroll to zoom</div>
-  <div id="crop-container">
+  <div style="font-size:12px;color:var(--muted);margin-top:-8px">Drag to reposition &middot; Scroll to zoom</div>
+  <div class="crop-shape-btns">
+    <button class="crop-shape-btn active" id="crop-btn-circle" onclick="setCropShape('circle')">
+      <span class="crop-shape-icon">⬤</span>Circle
+      <span class="crop-shape-note">Used in hero</span>
+    </button>
+    <button class="crop-shape-btn" id="crop-btn-square" onclick="setCropShape('square')">
+      <span class="crop-shape-icon">⬛</span>Square
+      <span class="crop-shape-note">&nbsp;</span>
+    </button>
+    <button class="crop-shape-btn" id="crop-btn-rect" onclick="setCropShape('rect')">
+      <span class="crop-shape-icon">▬</span>Rectangle
+      <span class="crop-shape-note">&nbsp;</span>
+    </button>
+  </div>
+  <div id="crop-container" class="shape-circle">
     <img id="crop-img" draggable="false" alt="">
   </div>
   <div style="display:flex;gap:12px;margin-top:4px;">
@@ -628,8 +652,8 @@ var pendingObverse=null, pendingReverse=null, existingObverseUrl=null, existingR
 /* ── PHOTO UPLOAD HELPER ── */
 async function uploadIfNeeded(id, side, pendingFile, existingUrl){
   if(pendingFile){
-    var path='coins/'+id+'/'+side;
-    var res=await _supabase.storage.from('coins-photos').upload(path, pendingFile, {upsert:true});
+    var path='coins/'+id+'/'+side+'.jpg';
+    var res=await _supabase.storage.from('coins-photos').upload(path, pendingFile, {upsert:true, contentType:'image/jpeg'});
     if(res.error){console.error('Upload error:',res.error);return existingUrl||null;}
     var pub=_supabase.storage.from('coins-photos').getPublicUrl(path);
     return pub.data.publicUrl;
@@ -637,8 +661,8 @@ async function uploadIfNeeded(id, side, pendingFile, existingUrl){
   if(existingUrl && existingUrl.startsWith('data:')){
     var resp=await fetch(existingUrl);
     var blob=await resp.blob();
-    var path='coins/'+id+'/'+side;
-    var res=await _supabase.storage.from('coins-photos').upload(path, blob, {upsert:true});
+    var path='coins/'+id+'/'+side+'.jpg';
+    var res=await _supabase.storage.from('coins-photos').upload(path, blob, {upsert:true, contentType:'image/jpeg'});
     if(res.error){console.error('Upload error:',res.error);return existingUrl||null;}
     var pub=_supabase.storage.from('coins-photos').getPublicUrl(path);
     return pub.data.publicUrl;
@@ -981,18 +1005,21 @@ function renderForm(coin){
     +'</div></div>';
 }
 
+// heroEligible tracks whether each side was cropped as circle
+var _heroEligible={obverse:false, reverse:false};
+
 function previewPhoto(input, prevId, side){
   var file=input.files[0]; if(!file) return;
-  openCrop(file, function(croppedBlob, croppedUrl){
-    if(side==='obverse') pendingObverse=croppedBlob;
-    else if(side==='reverse') pendingReverse=croppedBlob;
+  openCrop(file, function(croppedBlob, croppedUrl, isCircle){
+    if(side==='obverse'){ pendingObverse=croppedBlob; _heroEligible.obverse=isCircle; }
+    else if(side==='reverse'){ pendingReverse=croppedBlob; _heroEligible.reverse=isCircle; }
     var prev=document.getElementById(prevId);
     if(prev){prev.src=croppedUrl; prev.classList.add('visible');}
     var phId=side==='obverse'?'ob-ph':'rev-ph';
     var ph=document.getElementById(phId);
     if(ph) ph.style.display='none';
-  });
-  input.value=''; // reset so same file can be re-selected
+  }, side);
+  input.value='';
 }
 
 async function saveCoin(){
@@ -1020,6 +1047,7 @@ async function saveCoin(){
       tags:TAG_DEFS.map(function(t){return t.key;}).filter(function(k){var el=document.getElementById('tag-'+k);return el&&el.checked;}),
       obverse:obverseUrl,
       reverse:reverseUrl,
+      hero_eligible: pendingObverse ? _heroEligible.obverse : (existingCoin ? (existingCoin.hero_eligible !== false) : true),
       created_at:(existingCoin&&existingCoin.created_at)||Date.now(),
       updated_at:Date.now(),
     };
@@ -1032,7 +1060,8 @@ if(res.error) throw res.error;
     await loadCoins();
     refreshSidebar();
   } catch(e){
-    showToast('Save failed: '+e.message);
+    console.error('saveCoin error:',e);
+    showToast('Save failed: '+(e.message||JSON.stringify(e)));
   } finally {
     if(btn){btn.textContent=editingId?'\uD83D\uDCBE Save Changes':'+ Add to Shop';btn.disabled=false;}
   }
@@ -1350,7 +1379,7 @@ var heroCoinIndex=0, heroCoinShowingFront=true, heroCoinTimer=null;
 
 function startHeroCoinCycle(){
   if(heroCoinTimer) clearInterval(heroCoinTimer);
-  var imgCoins=coins.filter(function(c){return c.obverse;});
+  var imgCoins=coins.filter(function(c){return c.obverse && c.hero_eligible!==false;});
   if(!imgCoins.length) return;
   var front=document.getElementById('hero-coin-img-front');
   var back=document.getElementById('hero-coin-img-back');
@@ -1362,7 +1391,7 @@ function startHeroCoinCycle(){
   heroCoinShowingFront=true; heroCoinIndex=0;
   heroCoinTimer=setInterval(function(){
     var flipper=document.getElementById('hero-coin-flipper'); if(!flipper) return;
-    var imgCoins=coins.filter(function(c){return c.obverse;}); if(!imgCoins.length) return;
+    var imgCoins=coins.filter(function(c){return c.obverse && c.hero_eligible!==false;}); if(!imgCoins.length) return;
     heroCoinIndex=(heroCoinIndex+1)%imgCoins.length;
     var nextSrc=imgCoins[heroCoinIndex].obverse;
     if(heroCoinShowingFront){
@@ -1384,10 +1413,34 @@ function startHeroCoinCycle(){
 var _cropCallback=null, _cropScale=1, _cropX=0, _cropY=0;
 var _cropDragging=false, _cropDragStartX=0, _cropDragStartY=0, _cropImgStartX=0, _cropImgStartY=0;
 var _cropImgNaturalW=0, _cropImgNaturalH=0;
-var CROP_SIZE=320;
+var _cropShape='circle'; // 'circle', 'square', 'rect'
+var _cropCallbackSide=null; // track which side (obverse/reverse) for hero eligibility
 
-function openCrop(file, callback){
+var CROP_DIMS={circle:{w:320,h:320},square:{w:320,h:320},rect:{w:360,h:240}};
+
+function setCropShape(shape){
+  _cropShape=shape;
+  ['circle','square','rect'].forEach(function(s){
+    document.getElementById('crop-btn-'+s).classList.toggle('active',s===shape);
+  });
+  var container=document.getElementById('crop-container');
+  container.className='shape-'+shape;
+  // reset position and re-fit
+  _cropX=0; _cropY=0;
+  var dim=CROP_DIMS[shape];
+  var minDim=Math.min(_cropImgNaturalW/_cropImgNaturalH>dim.w/dim.h?_cropImgNaturalH*(dim.w/dim.h):_cropImgNaturalW,_cropImgNaturalW);
+  _cropScale=Math.max(dim.w/_cropImgNaturalW, dim.h/_cropImgNaturalH);
+  applyCropTransform();
+}
+
+function openCrop(file, callback, side){
   _cropCallback=callback;
+  _cropCallbackSide=side||null;
+  _cropShape='circle';
+  ['circle','square','rect'].forEach(function(s){
+    document.getElementById('crop-btn-'+s).classList.toggle('active',s==='circle');
+  });
+  document.getElementById('crop-container').className='shape-circle';
   var url=URL.createObjectURL(file);
   var overlay=document.getElementById('crop-overlay');
   var img=document.getElementById('crop-img');
@@ -1395,9 +1448,7 @@ function openCrop(file, callback){
   img.onload=function(){
     _cropImgNaturalW=img.naturalWidth;
     _cropImgNaturalH=img.naturalHeight;
-    // fit image to fill the circle initially
-    var minDim=Math.min(_cropImgNaturalW,_cropImgNaturalH);
-    _cropScale=CROP_SIZE/minDim;
+    _cropScale=Math.max(320/_cropImgNaturalW, 320/_cropImgNaturalH);
     _cropX=0; _cropY=0;
     applyCropTransform();
   };
@@ -1406,44 +1457,57 @@ function openCrop(file, callback){
 
 function applyCropTransform(){
   var img=document.getElementById('crop-img');
+  var dim=CROP_DIMS[_cropShape];
+  var container=document.getElementById('crop-container');
+  container.style.width=dim.w+'px';
+  container.style.height=dim.h+'px';
   var w=_cropImgNaturalW*_cropScale, h=_cropImgNaturalH*_cropScale;
-  var maxX=Math.max(0,(w-CROP_SIZE)/2);
-  var maxY=Math.max(0,(h-CROP_SIZE)/2);
+  var maxX=Math.max(0,(w-dim.w)/2);
+  var maxY=Math.max(0,(h-dim.h)/2);
   _cropX=Math.max(-maxX,Math.min(maxX,_cropX));
   _cropY=Math.max(-maxY,Math.min(maxY,_cropY));
   img.style.width=w+'px';
   img.style.height=h+'px';
-  img.style.left=((CROP_SIZE-w)/2+_cropX)+'px';
-  img.style.top=((CROP_SIZE-h)/2+_cropY)+'px';
+  img.style.left=((dim.w-w)/2+_cropX)+'px';
+  img.style.top=((dim.h-h)/2+_cropY)+'px';
 }
 
 function cancelCrop(){
   document.getElementById('crop-overlay').classList.remove('open');
-  _cropCallback=null;
+  _cropCallback=null; _cropCallbackSide=null;
 }
 
 function confirmCrop(){
   var img=document.getElementById('crop-img');
+  var dim=CROP_DIMS[_cropShape];
   var canvas=document.createElement('canvas');
-  canvas.width=CROP_SIZE; canvas.height=CROP_SIZE;
+  canvas.width=dim.w; canvas.height=dim.h;
   var ctx=canvas.getContext('2d');
+  // clip to shape
   ctx.beginPath();
-  ctx.arc(CROP_SIZE/2,CROP_SIZE/2,CROP_SIZE/2,0,Math.PI*2);
+  if(_cropShape==='circle'){
+    ctx.arc(dim.w/2,dim.h/2,dim.w/2,0,Math.PI*2);
+  } else {
+    ctx.rect(0,0,dim.w,dim.h);
+  }
   ctx.clip();
   var drawX=parseFloat(img.style.left)||0;
   var drawY=parseFloat(img.style.top)||0;
   var w=parseFloat(img.style.width)||_cropImgNaturalW*_cropScale;
   var h=parseFloat(img.style.height)||_cropImgNaturalH*_cropScale;
   ctx.drawImage(img,drawX,drawY,w,h);
+  var isCircle=_cropShape==='circle';
+  var side=_cropCallbackSide;
   canvas.toBlob(function(blob){
     var url=URL.createObjectURL(blob);
     document.getElementById('crop-overlay').classList.remove('open');
-    if(_cropCallback) _cropCallback(blob,url);
-    _cropCallback=null;
-  },'image/jpeg',0.92);
+    // pass isCircle flag so caller can decide hero eligibility
+    if(_cropCallback) _cropCallback(blob, url, isCircle, side);
+    _cropCallback=null; _cropCallbackSide=null;
+  },'image/png');
 }
 
-// Drag
+// Drag & zoom
 document.addEventListener('DOMContentLoaded',function(){
   var container=document.getElementById('crop-container');
   if(!container) return;
@@ -1462,10 +1526,9 @@ document.addEventListener('DOMContentLoaded',function(){
   });
   document.addEventListener('mouseup',function(){
     _cropDragging=false;
-    var container=document.getElementById('crop-container');
-    if(container) container.style.cursor='grab';
+    var c=document.getElementById('crop-container');
+    if(c) c.style.cursor='grab';
   });
-  // Touch support
   container.addEventListener('touchstart',function(e){
     if(e.touches.length===1){
       _cropDragging=true;
@@ -1481,235 +1544,15 @@ document.addEventListener('DOMContentLoaded',function(){
     applyCropTransform();
   },{passive:false});
   document.addEventListener('touchend',function(){_cropDragging=false;});
-  // Scroll to zoom
   container.addEventListener('wheel',function(e){
     e.preventDefault();
     var delta=e.deltaY>0?-0.08:0.08;
-    var minScale=CROP_SIZE/Math.min(_cropImgNaturalW,_cropImgNaturalH);
+    var dim=CROP_DIMS[_cropShape];
+    var minScale=Math.max(dim.w/_cropImgNaturalW, dim.h/_cropImgNaturalH);
     _cropScale=Math.max(minScale,Math.min(10,_cropScale+delta*_cropScale));
     applyCropTransform();
   },{passive:false});
 });
-
-updateCartUI();
-loadCoins();
-</script>
-</body>
-</html>
-function goToCheckoutStep2(){
-  if(!selectedShipping){showToast('Please select a shipping option');return;}
-  var opt=SHIPPING_OPTIONS.find(function(o){return o.id===selectedShipping;});
-  var sub=cartSubtotal(), total=sub+opt.price;
-  document.getElementById('checkout-modal-title').textContent='CHECKOUT \u2014 YOUR DETAILS';
-  document.getElementById('checkout-body').innerHTML=
-    '<div class="form-group"><label class="form-label">Full Name *</label>'
-    +'<input class="form-input" id="co-name" type="text" placeholder="Jane Smith"></div>'
-    +'<div class="form-group"><label class="form-label">Email Address *</label>'
-    +'<input class="form-input" id="co-email" type="email" placeholder="jane@email.com"></div>'
-    +'<div class="form-group"><label class="form-label">Street Address *</label>'
-    +'<input class="form-input" id="co-addr" type="text" placeholder="123 Example St"></div>'
-    +'<div class="form-row">'
-    +'<div class="form-group" style="margin-bottom:0"><input class="form-input" id="co-suburb" type="text" placeholder="Suburb"></div>'
-    +'<div class="form-group" style="margin-bottom:0"><input class="form-input" id="co-state" type="text" placeholder="State"></div>'
-    +'</div>'
-    +'<div class="form-row" style="margin-top:6px">'
-    +'<div class="form-group" style="margin-bottom:0"><input class="form-input" id="co-postcode" type="text" placeholder="Postcode"></div>'
-    +'<div class="form-group" style="margin-bottom:0"><input class="form-input" id="co-country" type="text" value="Australia" readonly style="color:var(--muted)"></div>'
-    +'</div>'
-    +'<div style="margin:20px 0;padding:14px 16px;background:var(--card);border:1px solid var(--border);font-size:13px">'
-    +'<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--muted)">Coins</span><span style="font-family:var(--font-mono)">'+fmt(sub)+'</span></div>'
-    +'<div style="display:flex;justify-content:space-between;margin-bottom:10px"><span style="color:var(--muted)">'+opt.label+'</span><span style="font-family:var(--font-mono)">'+fmt(opt.price)+'</span></div>'
-    +'<div style="display:flex;justify-content:space-between;font-family:var(--font-display);font-size:20px;padding-top:10px;border-top:1px solid var(--border)">'
-    +'<span>TOTAL (AUD)</span><span style="color:var(--accent)">'+fmt(total)+'</span></div></div>'
-    +'<p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">'
-    +'After submitting you will receive a <strong style="color:var(--text)">PayPal invoice</strong> at your email. '
-    +'Your order ships once payment is confirmed.</p>'
-    +'<div style="display:flex;gap:10px">'
-    +'<button class="btn-secondary" onclick="renderCheckoutStep1()">&larr; Back</button>'
-    +'<button class="btn-full" style="flex:1" onclick="submitOrder(\''+selectedShipping+'\','+total+')">Place Order</button>'
-    +'</div>';
-}
-
-async function submitOrder(shippingId,total){
-  var name=document.getElementById('co-name').value.trim();
-  var email=document.getElementById('co-email').value.trim();
-  var addr=document.getElementById('co-addr').value.trim();
-  var suburb=document.getElementById('co-suburb').value.trim();
-  var state=document.getElementById('co-state').value.trim();
-  var postcode=document.getElementById('co-postcode').value.trim();
-  if(!name||!email||!addr||!suburb||!postcode){showToast('Please fill in all required fields');return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Please enter a valid email');return;}
-  var opt=SHIPPING_OPTIONS.find(function(o){return o.id===shippingId;});
-  var itemLines=Object.keys(cart).map(function(id){
-    var c=coins.find(function(x){return x.id===id;}); if(!c) return '';
-    return '- '+c.name+' x'+cart[id]+' = '+fmt(c.price*cart[id]);
-  }).filter(Boolean).join('\n');
-  var message='NEW ORDER\n\nCustomer: '+name+'\nEmail: '+email
-    +'\nAddress: '+addr+', '+suburb+' '+state+' '+postcode+', Australia'
-    +'\n\nItems:\n'+itemLines
-    +'\n\nShipping: '+opt.label+' '+fmt(opt.price)
-    +'\nORDER TOTAL (AUD): '+fmt(total)
-    +'\n\nPlease send a PayPal invoice to: '+email;
-
-  document.getElementById('checkout-body').innerHTML=
-    '<div style="text-align:center;padding:48px 20px">'
-    +'<div style="font-size:44px;margin-bottom:16px">&#8987;</div>'
-    +'<div style="font-family:var(--font-display);font-size:22px;letter-spacing:2px">SENDING ORDER...</div>'
-    +'</div>';
-
-  var snapshotLines=itemLines, snapshotOpt=opt;
-
-  async function doConfirm(){
-    try{
-      var updates=Object.keys(cart).map(function(id){
-        var coin=coins.find(function(x){return x.id===id;});
-        if(!coin) return Promise.resolve();
-        var newStock=Math.max(0,(Number(coin.stock)||0)-cart[id]);
-        return _supabase.from('coins').upsert(Object.assign({},coin,{stock:newStock,updated_at:Date.now()}));
-      });
-      await Promise.all(updates);
-    } catch(e){ console.warn('Stock update error:',e); }
-    cart={}; updateCartUI();
-    document.getElementById('checkout-modal-title').textContent='ORDER PLACED!';
-    document.getElementById('checkout-body').innerHTML=
-      '<div style="text-align:center;padding:20px 0">'
-      +'<div style="font-size:52px;margin-bottom:16px">&#x1FA99;</div>'
-      +'<div style="font-family:var(--font-display);font-size:28px;letter-spacing:2px;color:var(--accent);margin-bottom:12px">THANKS, '+name.split(' ')[0].toUpperCase()+'!</div>'
-      +'<p style="color:var(--muted);font-size:14px;line-height:1.7;max-width:380px;margin:0 auto 24px">'
-      +'Your order is confirmed. A <strong style="color:var(--text)">PayPal invoice</strong> will be sent to '
-      +'<strong style="color:var(--text)">'+email+'</strong> shortly. Your coins will be dispatched once payment is received.</p>'
-      +'<div style="background:var(--card);border:1px solid var(--border);padding:16px;text-align:left;margin-bottom:24px;font-size:12px;font-family:var(--font-mono);white-space:pre-line;color:var(--muted)">'
-      +snapshotLines+'\n\n'+snapshotOpt.label+': '+fmt(snapshotOpt.price)+'\nTOTAL: '+fmt(total)+'</div>'
-      +'<button class="btn-full" onclick="closeModal(\'checkout-modal\')">Back to Shop</button>'
-      +'</div>';
-  }
-
-  if(FORMSPREE_ID!=='YOUR_FORMSPREE_ID'){
-    fetch('https://formspree.io/f/'+FORMSPREE_ID,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name:name,email:email,_subject:'New Order from '+name,message:message})
-    }).then(doConfirm).catch(function(){
-      document.getElementById('checkout-body').innerHTML=
-        '<div style="text-align:center;padding:40px;color:var(--accent2)">Something went wrong. Please try again.</div>'
-        +'<button class="btn-full" onclick="goToCheckoutStep2()">&larr; Try Again</button>';
-    });
-  } else {
-    await doConfirm();
-  }
-}
-
-function showToast(msg){
-  var t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(function(){t.classList.remove('show');},2400);
-}
-
-/* ── SELL SECTION ── */
-var sellImgData=['','',''];
-
-function openSellSection(e){
-  document.querySelector('.shop').style.display='none';
-  document.querySelector('.filter-bar').style.display='none';
-  document.getElementById('sell-section').style.display='block';
-  document.getElementById('sell-section').scrollIntoView({behavior:'smooth'});
-  document.querySelectorAll('nav a').forEach(function(a){a.classList.remove('active');});
-  if(e&&e.target) e.target.classList.add('active');
-}
-
-function sellPreview(input,imgId){
-  var file=input.files[0]; if(!file) return;
-  var idx=parseInt(imgId.slice(-1));
-  var reader=new FileReader();
-  reader.onload=function(e){
-    sellImgData[idx]=e.target.result;
-    var img=document.getElementById(imgId);
-    img.src=e.target.result; img.classList.add('visible');
-  };
-  reader.readAsDataURL(file);
-}
-
-function submitSellForm(){
-  var name=document.getElementById('sell-name').value.trim();
-  var senderName=document.getElementById('sell-sender-name').value.trim();
-  var senderEmail=document.getElementById('sell-sender-email').value.trim();
-  if(!name){showToast('Please describe the coin');return;}
-  if(!senderName){showToast('Please enter your name');return;}
-  if(!senderEmail||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(senderEmail)){showToast('Please enter a valid email');return;}
-  var country=document.getElementById('sell-country').value.trim();
-  var year=document.getElementById('sell-year').value.trim();
-  var qty=document.getElementById('sell-qty').value||'1';
-  var condition=document.getElementById('sell-condition').value||'Not specified';
-  var notes=document.getElementById('sell-notes').value.trim();
-  var message='COIN SUBMISSION FOR ASSESSMENT'
-    +'\n\nFrom: '+senderName+' ('+senderEmail+')'
-    +'\n\nCoin: '+name
-    +(country?'\nCountry: '+country:'')
-    +(year?'\nYear: '+year:'')
-    +'\nQuantity: '+qty
-    +'\nCondition: '+condition
-    +(notes?'\n\nNotes: '+notes:'')
-    +'\n\nPlease reply to: '+senderEmail;
-  var btn=document.querySelector('#sell-section .btn-full');
-  if(btn){btn.textContent='Sending...';btn.disabled=true;}
-  function doSellConfirm(){
-    document.querySelector('.sell-form').innerHTML=
-      '<div style="text-align:center;padding:48px 20px">'
-      +'<div style="font-size:52px;margin-bottom:16px">&#x1FA99;</div>'
-      +'<div style="font-family:var(--font-display);font-size:28px;letter-spacing:2px;color:var(--accent);margin-bottom:12px">SUBMISSION RECEIVED!</div>'
-      +'<p style="color:var(--muted);font-size:14px;line-height:1.7;max-width:380px;margin:0 auto 24px">'
-      +'Thanks '+senderName.split(' ')[0]+'! We\'ll take a look and get back to you at '
-      +'<strong style="color:var(--text)">'+senderEmail+'</strong> within a few days. Feel free to reply to our email if you have any questions in the meantime.</p>'
-      +'<button class="btn-full" style="max-width:240px;margin:0 auto" onclick="location.reload()">Submit Another Coin</button>'
-      +'</div>';
-  }
-  if(FORMSPREE_ID!=='YOUR_FORMSPREE_ID'){
-    fetch('https://formspree.io/f/'+FORMSPREE_ID,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name:senderName,email:senderEmail,_subject:'Coin Submission from '+senderName,message:message})
-    }).then(doSellConfirm).catch(function(){
-      showToast('Something went wrong. Please try again.');
-      if(btn){btn.textContent='Send Us Your Coin';btn.disabled=false;}
-    });
-  } else {
-    setTimeout(doSellConfirm,800);
-  }
-}
-
-/* ── HERO COIN CYCLER ── */
-var heroCoinIndex=0, heroCoinShowingFront=true, heroCoinTimer=null;
-
-function startHeroCoinCycle(){
-  if(heroCoinTimer) clearInterval(heroCoinTimer);
-  var imgCoins=coins.filter(function(c){return c.obverse;});
-  if(!imgCoins.length) return;
-  var front=document.getElementById('hero-coin-img-front');
-  var back=document.getElementById('hero-coin-img-back');
-  var flipper=document.getElementById('hero-coin-flipper');
-  if(!front||!back||!flipper) return;
-  front.src=imgCoins[0].obverse; front.style.display='block';
-  back.src=imgCoins[Math.min(1,imgCoins.length-1)].obverse; back.style.display='block';
-  flipper.classList.remove('flipping');
-  heroCoinShowingFront=true; heroCoinIndex=0;
-  heroCoinTimer=setInterval(function(){
-    var flipper=document.getElementById('hero-coin-flipper'); if(!flipper) return;
-    var imgCoins=coins.filter(function(c){return c.obverse;}); if(!imgCoins.length) return;
-    heroCoinIndex=(heroCoinIndex+1)%imgCoins.length;
-    var nextSrc=imgCoins[heroCoinIndex].obverse;
-    if(heroCoinShowingFront){
-      var back=document.getElementById('hero-coin-img-back');
-      if(back){back.src=nextSrc;back.style.display='block';}
-      flipper.classList.add('flipping');
-      heroCoinShowingFront=false;
-    } else {
-      var front=document.getElementById('hero-coin-img-front');
-      if(front){front.src=nextSrc;front.style.display='block';}
-      flipper.classList.remove('flipping');
-      heroCoinShowingFront=true;
-    }
-  },3000);
-}
-
 
 updateCartUI();
 loadCoins();
