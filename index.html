@@ -543,6 +543,9 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
       <div class="admin-sidebar-section">
         <button class="add-coin-btn" onclick="showAddForm()">+ Add New Coin</button>
       </div>
+      <div class="admin-sidebar-section">
+        <button class="add-coin-btn" style="background:var(--surface);color:var(--accent);border:1px solid var(--border)" onclick="showOrders()">&#128220; View Orders</button>
+      </div>
       <div class="admin-coin-list-label">Your Coins</div>
       <div class="admin-coin-list" id="admin-coin-list"></div>
     </div>
@@ -934,6 +937,71 @@ function showWelcome(){
   refreshSidebar();
 }
 function showAddForm(){editingId=null;pendingObverse=null;pendingReverse=null;existingObverseUrl=null;existingReverseUrl=null;renderForm(null);refreshSidebar();}
+
+async function showOrders(){
+  var main=document.getElementById('admin-main');
+  main.innerHTML='<div style="padding:32px 40px"><div style="font-family:var(--font-display);font-size:32px;letter-spacing:2px;margin-bottom:24px">ORDERS</div><div style="color:var(--muted);font-size:13px">Loading...</div></div>';
+  var res=await _supabase.from('orders').select('*').order('created_at',{ascending:false});
+  if(res.error){main.innerHTML='<div style="padding:32px 40px;color:var(--accent2)">Failed to load orders: '+res.error.message+'</div>';return;}
+  var orders=res.data||[];
+  if(!orders.length){
+    main.innerHTML='<div style="padding:32px 40px"><div style="font-family:var(--font-display);font-size:32px;letter-spacing:2px;margin-bottom:24px">ORDERS</div><div style="color:var(--muted);font-size:13px">No orders yet.</div></div>';
+    return;
+  }
+  var rows=orders.map(function(o){
+    var date=new Date(o.created_at).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
+    var itemList=(o.items||[]).map(function(i){return i.name+' x'+i.qty;}).join(', ');
+    var statusColor=o.status==='cancelled'?'var(--accent2)':o.status==='fulfilled'?'#4caf50':'var(--accent)';
+    return '<div style="border:1px solid var(--border);background:var(--card);padding:20px;margin-bottom:12px;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px">'
+      +'<div>'
+      +'<div style="font-weight:600;font-size:14px">'+o.customer_name+'</div>'
+      +'<div style="font-size:12px;color:var(--muted);margin-top:2px">'+o.customer_email+' &middot; '+date+'</div>'
+      +'<div style="font-size:12px;color:var(--muted);margin-top:2px">'+o.address+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;flex-shrink:0">'
+      +'<div style="font-family:var(--font-display);font-size:22px;color:var(--accent)">'+fmt(o.total)+'</div>'
+      +'<div style="font-size:11px;color:var(--muted)">'+o.shipping_option+'</div>'
+      +'</div>'
+      +'</div>'
+      +'<div style="font-size:12px;color:var(--muted);margin-bottom:14px">'+itemList+'</div>'
+      +'<div style="display:flex;gap:8px;align-items:center">'
+      +'<span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:'+statusColor+'">'+o.status.toUpperCase()+'</span>'
+      +'<div style="flex:1"></div>'
+      +(o.status!=='fulfilled'?'<button class="btn-secondary" style="padding:6px 14px;font-size:11px" onclick="setOrderStatus(this.dataset.id,\'fulfilled\')" data-id="'+o.id+'">&#10003; Mark Fulfilled</button>':'')
+      +(o.status!=='cancelled'?'<button class="btn-secondary btn-danger" style="padding:6px 14px;font-size:11px" onclick="cancelOrder(this.dataset.id)" data-id="'+o.id+'">&#10007; Cancel &amp; Restock</button>':'')
+      +'</div>'
+      +'</div>';
+  }).join('');
+  main.innerHTML='<div style="padding:32px 40px"><div style="font-family:var(--font-display);font-size:32px;letter-spacing:2px;margin-bottom:24px">ORDERS <span style="font-size:16px;color:var(--muted)">'+orders.length+' total</span></div>'+rows+'</div>';
+}
+
+async function setOrderStatus(orderId, status){
+  await _supabase.from('orders').update({status:status}).eq('id',orderId);
+  showOrders();
+  showToast('Order marked as '+status);
+}
+
+async function cancelOrder(orderId){
+  if(!confirm('Cancel this order and restock the coins?')) return;
+  var res=await _supabase.from('orders').select('*').eq('id',orderId).single();
+  if(res.error){showToast('Error: '+res.error.message);return;}
+  var order=res.data;
+  // Restock each coin
+  try{
+    var restocks=(order.items||[]).map(async function(item){
+      var coinRes=await _supabase.from('coins').select('*').eq('id',item.id).single();
+      if(coinRes.error||!coinRes.data) return;
+      var coin=coinRes.data;
+      return _supabase.from('coins').update({stock:(Number(coin.stock)||0)+item.qty,updated_at:Date.now()}).eq('id',item.id);
+    });
+    await Promise.all(restocks);
+  } catch(e){console.warn('Restock error:',e);}
+  await _supabase.from('orders').update({status:'cancelled'}).eq('id',orderId);
+  await loadCoins();
+  showOrders();
+  showToast('Order cancelled and stock restored');
+}
 function showEditForm(id){editingId=id;var c=coins.find(function(x){return x.id===id;});renderForm(c);refreshSidebar();}
 
 function renderForm(coin){
@@ -1266,6 +1334,25 @@ async function submitOrder(shippingId,total){
       });
       await Promise.all(updates);
     } catch(e){ console.warn('Stock update error:',e); }
+    // Save order record
+    try{
+      var orderItems=Object.keys(cart).map(function(id){
+        var coin=coins.find(function(x){return x.id===id;}); if(!coin) return null;
+        return {id:id,name:coin.name,qty:cart[id],price:coin.price};
+      }).filter(Boolean);
+      await _supabase.from('orders').insert({
+        id:uid(),
+        created_at:Date.now(),
+        customer_name:name,
+        customer_email:email,
+        address:addr+', '+suburb+' '+state+' '+postcode+', Australia',
+        shipping_option:opt.label,
+        shipping_price:opt.price,
+        total:total,
+        items:orderItems,
+        status:'pending'
+      });
+    } catch(e){ console.warn('Order save error:',e); }
     cart={}; updateCartUI();
     document.getElementById('checkout-modal-title').textContent='ORDER PLACED!';
     document.getElementById('checkout-body').innerHTML=
@@ -1316,15 +1403,16 @@ function openSellSection(e){
 
 function sellPreview(input,imgId){
   var file=input.files[0]; if(!file) return;
-  openCrop(file, function(croppedBlob, croppedUrl){
-    var idx=parseInt(imgId.slice(-1));
-    sellImgData[idx]=croppedUrl;
+  var idx=parseInt(imgId.slice(-1));
+  var reader=new FileReader();
+  reader.onload=function(e){
+    sellImgData[idx]=e.target.result;
     var img=document.getElementById(imgId);
-    if(img){img.src=croppedUrl; img.classList.add('visible');}
-    var ph=document.getElementById('sell-ph-'+idx)||(imgId==='sell-img-0'?document.getElementById('sell-ph-0'):null);
+    if(img){img.src=e.target.result; img.classList.add('visible');}
+    var ph=document.getElementById('sell-ph-'+idx);
     if(ph) ph.style.display='none';
-  });
-  input.value='';
+  };
+  reader.readAsDataURL(file);
 }
 
 function submitSellForm(){
