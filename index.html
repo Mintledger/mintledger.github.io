@@ -1397,7 +1397,7 @@ async function submitOrder(shippingId,total){
           access_key:W3F_KEY,
           subject:'Your Mint Ledger Order — Thanks '+name.split(' ')[0]+'!',
           from_name:'The Mint Ledger',
-          to:'themintledger@gmail.com',
+          to:email,
           reply_to:'themintledger@gmail.com',
           message:customerConfirmMsg
         })
@@ -1501,7 +1501,7 @@ function submitSellForm(){
           access_key:W3F_KEY,
           subject:'We\'ve received your coin submission!',
           from_name:'The Mint Ledger',
-          to:'themintledger@gmail.com',
+          to:senderEmail,
           reply_to:'themintledger@gmail.com',
           message:sellConfirmMsg
         })
