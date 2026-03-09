@@ -1377,6 +1377,7 @@ async function submitOrder(shippingId,total){
       +'</div>';
   }
 
+  var customerConfirmMsg='Hi '+name.split(' ')[0]+'!\n\nThanks for your order with The Mint Ledger. Here\'s a summary:\n\n'+itemLines+'\n\nShipping: '+opt.label+' '+fmt(opt.price)+'\nTotal: '+fmt(total)+' AUD\n\nWe\'ll send you a PayPal invoice shortly. Once payment is confirmed your coins will be packed and dispatched to:\n\n'+addr+', '+suburb+' '+state+' '+postcode+', Australia\n\nIf you have any questions, reply to this email.\n\nThanks,\nThe Mint Ledger';
   fetch('https://api.web3forms.com/submit',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -1387,8 +1388,22 @@ async function submitOrder(shippingId,total){
       message:message
     })
   }).then(function(r){return r.json();}).then(function(r){
-    if(r.success){ doConfirm(); }
-    else {
+    if(r.success){
+      // Send customer confirmation
+      fetch('https://api.web3forms.com/submit',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          access_key:W3F_KEY,
+          subject:'Your Mint Ledger Order — Thanks '+name.split(' ')[0]+'!',
+          from_name:'The Mint Ledger',
+          to:'themintledger@gmail.com',
+          reply_to:'themintledger@gmail.com',
+          message:customerConfirmMsg
+        })
+      });
+      doConfirm();
+    } else {
       document.getElementById('checkout-body').innerHTML=
         '<div style="text-align:center;padding:40px;color:var(--accent2)">Something went wrong. Please try again.</div>'
         +'<button class="btn-full" onclick="goToCheckoutStep2()">&larr; Try Again</button>';
@@ -1466,6 +1481,7 @@ function submitSellForm(){
       +'<button class="btn-full" style="max-width:240px;margin:0 auto" onclick="location.reload()">Submit Another Coin</button>'
       +'</div>';
   }
+  var sellConfirmMsg='Hi '+senderName.split(' ')[0]+'!\n\nThanks for submitting your coin to The Mint Ledger. We\'ve received your submission and will take a look shortly.\n\nCoin: '+name+(country?'\nCountry: '+country:'')+(year?'\nYear: '+year:'')+'\nCondition: '+condition+(notes?'\n\nYour notes: '+notes:'')+'\n\nWe\'ll get back to you at this email address within a few days with our assessment. Feel free to reply if you have any questions in the meantime.\n\nThanks,\nThe Mint Ledger';
   fetch('https://api.web3forms.com/submit',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -1476,8 +1492,25 @@ function submitSellForm(){
       message:message
     })
   }).then(function(r){return r.json();}).then(function(r){
-    if(r.success){ doSellConfirm(); }
-    else { showToast('Something went wrong. Please try again.'); if(btn){btn.textContent='Send Us Your Coin';btn.disabled=false;} }
+    if(r.success){
+      // Send submitter confirmation
+      fetch('https://api.web3forms.com/submit',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          access_key:W3F_KEY,
+          subject:'We\'ve received your coin submission!',
+          from_name:'The Mint Ledger',
+          to:'themintledger@gmail.com',
+          reply_to:'themintledger@gmail.com',
+          message:sellConfirmMsg
+        })
+      });
+      doSellConfirm();
+    } else {
+      showToast('Something went wrong. Please try again.');
+      if(btn){btn.textContent='Send Us Your Coin';btn.disabled=false;}
+    }
   }).catch(function(){
     showToast('Something went wrong. Please try again.');
     if(btn){btn.textContent='Send Us Your Coin';btn.disabled=false;}
