@@ -623,8 +623,7 @@ async function loadCoins(){
   startHeroCoinCycle();
 }
 
-// Sign up free at formspree.io, create a form, then replace YOUR_FORMSPREE_ID below
-var FORMSPREE_ID = 'YOUR_FORMSPREE_ID';
+var W3F_KEY = '2998c239-c722-4bd2-a84e-90c1c19157c6';
 
 
 var SHIPPING_OPTIONS = [
@@ -1378,19 +1377,27 @@ async function submitOrder(shippingId,total){
       +'</div>';
   }
 
-  if(FORMSPREE_ID!=='YOUR_FORMSPREE_ID'){
-    fetch('https://formspree.io/f/'+FORMSPREE_ID,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name:name,email:email,_subject:'New Order from '+name,message:message})
-    }).then(doConfirm).catch(function(){
+  fetch('https://api.web3forms.com/submit',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      access_key:W3F_KEY,
+      subject:'New Order from '+name,
+      from_name:'The Mint Ledger',
+      message:message
+    })
+  }).then(function(r){return r.json();}).then(function(r){
+    if(r.success){ doConfirm(); }
+    else {
       document.getElementById('checkout-body').innerHTML=
         '<div style="text-align:center;padding:40px;color:var(--accent2)">Something went wrong. Please try again.</div>'
         +'<button class="btn-full" onclick="goToCheckoutStep2()">&larr; Try Again</button>';
-    });
-  } else {
-    await doConfirm();
-  }
+    }
+  }).catch(function(){
+    document.getElementById('checkout-body').innerHTML=
+      '<div style="text-align:center;padding:40px;color:var(--accent2)">Something went wrong. Please try again.</div>'
+      +'<button class="btn-full" onclick="goToCheckoutStep2()">&larr; Try Again</button>';
+  });
 }
 
 function showToast(msg){
@@ -1459,17 +1466,22 @@ function submitSellForm(){
       +'<button class="btn-full" style="max-width:240px;margin:0 auto" onclick="location.reload()">Submit Another Coin</button>'
       +'</div>';
   }
-  if(FORMSPREE_ID!=='YOUR_FORMSPREE_ID'){
-    fetch('https://formspree.io/f/'+FORMSPREE_ID,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name:senderName,email:senderEmail,_subject:'Coin Submission from '+senderName,message:message})
-    }).then(doSellConfirm).catch(function(){
-      showToast('Something went wrong. Please try again.');
-      if(btn){btn.textContent='Send Us Your Coin';btn.disabled=false;}
-    });
-  } else {
-    setTimeout(doSellConfirm,800);
-  }
+  fetch('https://api.web3forms.com/submit',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      access_key:W3F_KEY,
+      subject:'Coin Submission from '+senderName,
+      from_name:'The Mint Ledger',
+      message:message
+    })
+  }).then(function(r){return r.json();}).then(function(r){
+    if(r.success){ doSellConfirm(); }
+    else { showToast('Something went wrong. Please try again.'); if(btn){btn.textContent='Send Us Your Coin';btn.disabled=false;} }
+  }).catch(function(){
+    showToast('Something went wrong. Please try again.');
+    if(btn){btn.textContent='Send Us Your Coin';btn.disabled=false;}
+  });
 }
 
 /* ── HERO COIN CYCLER ── */
