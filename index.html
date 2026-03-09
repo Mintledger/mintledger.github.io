@@ -310,6 +310,13 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
   .sell-steps{grid-template-columns:1fr;}
   .sell-photo-grid{grid-template-columns:1fr 1fr;}
 }
+
+.pac-container{background:#161616;border:1px solid #242424;box-shadow:0 8px 32px rgba(0,0,0,.6);font-family:'DM Sans',sans-serif;margin-top:2px;}
+.pac-item{padding:8px 14px;color:#f0ede8;font-size:13px;cursor:pointer;border-top:1px solid #242424;}
+.pac-item:hover,.pac-item-selected{background:rgba(240,192,64,.08);}
+.pac-item-query{color:#f0c040;font-weight:600;}
+.pac-matched{color:#f0c040;}
+.pac-icon{display:none;}
 </style>
 </head>
 <body>
@@ -608,6 +615,7 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9zpT8Jc-_84My4fZGpbwcQ6DfXvS3q6s&libraries=places&loading=async"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 var SUPABASE_URL = 'https://dlmxpvdnslikzzkigiyy.supabase.co';
@@ -1258,6 +1266,7 @@ function renderCheckoutStep1(){
     +'<button class="btn-secondary" onclick="renderCountryStep()">&larr; Back</button>'
     +'<button class="btn-full" style="flex:1" onclick="goToCheckoutStep2()">Continue &rarr; Enter Details</button>'
     +'</div>';
+  setTimeout(initAddressAutocomplete,200);
 }
 
 function selectShipping(id){
@@ -1283,7 +1292,7 @@ function goToCheckoutStep2(){
     +'<div class="form-group"><label class="form-label">Email Address *</label>'
     +'<input class="form-input" id="co-email" type="email" placeholder="jane@email.com"></div>'
     +'<div class="form-group"><label class="form-label">Street Address *</label>'
-    +'<input class="form-input" id="co-addr" type="text" placeholder="123 Example St"></div>'
+    +'<input class="form-input" id="co-addr" type="text" placeholder="Start typing your address..." autocomplete="off"></div>'
     +'<div class="form-row">'
     +'<div class="form-group" style="margin-bottom:0"><input class="form-input" id="co-suburb" type="text" placeholder="Suburb"></div>'
     +'<div class="form-group" style="margin-bottom:0"><input class="form-input" id="co-state" type="text" placeholder="State"></div>'
@@ -1391,14 +1400,13 @@ async function submitOrder(shippingId,total){
     })
   }).then(function(r){return r.json();}).then(function(r){
     if(r.success){
-      // Send customer confirmation via EmailJS
+      // Send customer confirmation via EmailJS then confirm
       emailjs.send('service_8ynwiw7','template_k3jhb8e',{
         to_email:email,
         to_name:name.split(' ')[0],
         subject:'Your Mint Ledger Order — Thanks '+name.split(' ')[0]+'!',
         message:customerConfirmMsg
-      }).catch(function(e){console.warn('EmailJS error:',e);});
-      doConfirm();
+      }).then(function(){doConfirm();}).catch(function(e){console.warn('EmailJS error:',e);doConfirm();});
     } else {
       document.getElementById('checkout-body').innerHTML=
         '<div style="text-align:center;padding:40px;color:var(--accent2)">Something went wrong. Please try again.</div>'
@@ -1489,14 +1497,13 @@ function submitSellForm(){
     })
   }).then(function(r){return r.json();}).then(function(r){
     if(r.success){
-      // Send submitter confirmation via EmailJS
+      // Send submitter confirmation via EmailJS then confirm
       emailjs.send('service_8ynwiw7','template_k3jhb8e',{
         to_email:senderEmail,
         to_name:senderName.split(' ')[0],
         subject:"We've received your coin submission!",
         message:sellConfirmMsg
-      }).catch(function(e){console.warn('EmailJS error:',e);});
-      doSellConfirm();
+      }).then(function(){doSellConfirm();}).catch(function(e){console.warn('EmailJS error:',e);doSellConfirm();});
     } else {
       showToast('Something went wrong. Please try again.');
       if(btn){btn.textContent='Send Us Your Coin';btn.disabled=false;}
@@ -1686,6 +1693,37 @@ document.addEventListener('DOMContentLoaded',function(){
     applyCropTransform();
   },{passive:false});
 });
+
+/* ── ADDRESS AUTOCOMPLETE ── */
+function initAddressAutocomplete(){
+  var input=document.getElementById('co-addr');
+  if(!input||typeof google==='undefined'||!google.maps||!google.maps.places) return;
+  var ac=new google.maps.places.Autocomplete(input,{
+    componentRestrictions:{country:'au'},
+    fields:['address_components'],
+    types:['address']
+  });
+  ac.addListener('place_changed',function(){
+    var place=ac.getPlace();
+    if(!place.address_components) return;
+    var streetNum='',route='',suburb='',state='',postcode='';
+    place.address_components.forEach(function(comp){
+      var t=comp.types;
+      if(t.includes('street_number')) streetNum=comp.long_name;
+      if(t.includes('route')) route=comp.long_name;
+      if(t.includes('locality')) suburb=comp.long_name;
+      if(t.includes('administrative_area_level_1')) state=comp.short_name;
+      if(t.includes('postal_code')) postcode=comp.long_name;
+    });
+    input.value=(streetNum?streetNum+' ':'')+route;
+    var s=document.getElementById('co-suburb');
+    var st=document.getElementById('co-state');
+    var pc=document.getElementById('co-postcode');
+    if(s) s.value=suburb;
+    if(st) st.value=state;
+    if(pc) pc.value=postcode;
+  });
+}
 
 updateCartUI();
 loadCoins();
