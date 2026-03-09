@@ -1266,7 +1266,6 @@ function renderCheckoutStep1(){
     +'<button class="btn-secondary" onclick="renderCountryStep()">&larr; Back</button>'
     +'<button class="btn-full" style="flex:1" onclick="goToCheckoutStep2()">Continue &rarr; Enter Details</button>'
     +'</div>';
-  setTimeout(initAddressAutocomplete,200);
 }
 
 function selectShipping(id){
@@ -1313,6 +1312,7 @@ function goToCheckoutStep2(){
     +'<button class="btn-secondary" onclick="renderCheckoutStep1()">&larr; Back</button>'
     +'<button class="btn-full" style="flex:1" onclick="submitOrder(\''+selectedShipping+'\','+total+')">Place Order</button>'
     +'</div>';
+  setTimeout(initAddressAutocomplete, 200);
 }
 
 async function submitOrder(shippingId,total){
