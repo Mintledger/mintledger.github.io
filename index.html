@@ -999,13 +999,13 @@ async function cancelOrder(orderId){
   var order=res.data;
   // Restock each coin
   try{
-    var restocks=(order.items||[]).map(async function(item){
-      var coinRes=await _supabase.from('coins').select('*').eq('id',item.id).single();
-      if(coinRes.error||!coinRes.data) return;
-      var coin=coinRes.data;
-      return _supabase.from('coins').update({stock:(Number(coin.stock)||0)+item.qty,updated_at:Date.now()}).eq('id',item.id);
-    });
-    await Promise.all(restocks);
+    for(var i=0;i<(order.items||[]).length;i++){
+      var item=order.items[i];
+      var coinRes=await _supabase.from('coins').select('stock').eq('id',item.id).single();
+      if(coinRes.error||!coinRes.data) continue;
+      var newStock=(Number(coinRes.data.stock)||0)+Number(item.qty||1);
+      await _supabase.from('coins').update({stock:newStock,updated_at:Date.now()}).eq('id',item.id);
+    }
   } catch(e){console.warn('Restock error:',e);}
   await _supabase.from('orders').update({status:'cancelled'}).eq('id',orderId);
   await loadCoins();
