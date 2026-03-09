@@ -623,7 +623,6 @@ async function loadCoins(){
 // Sign up free at formspree.io, create a form, then replace YOUR_FORMSPREE_ID below
 var FORMSPREE_ID = 'YOUR_FORMSPREE_ID';
 
-var PASS_KEY = 'mintledger_pass', AUTH_KEY = 'mintledger_auth', DEFAULT_PASS = 'coins123';
 
 var SHIPPING_OPTIONS = [
   {id:'regular',  label:'Regular Post',  desc:'3-7 business days \u2014 Untracked',           price:1.70},
@@ -639,10 +638,6 @@ var TAG_DEFS = [
   {key:'onSale',     label:'On Sale',     cls:'badge-on-sale'},
 ];
 
-function getPassword(){return localStorage.getItem(PASS_KEY)||DEFAULT_PASS;}
-function isAuthed(){return sessionStorage.getItem(AUTH_KEY)==='1';}
-function setAuthed(){sessionStorage.setItem(AUTH_KEY,'1');}
-function clearAuthed(){sessionStorage.removeItem(AUTH_KEY);}
 function fmt(n){return '$'+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
 
@@ -891,25 +886,37 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 function openModal(id){document.getElementById(id).classList.add('open');}
 
 /* ── AUTH ── */
-function openAdminGate(){
-  if(isAuthed()){openAdmin();return;}
+async function openAdminGate(){
+  // Check if already signed in
+  var session=await _supabase.auth.getSession();
+  if(session.data.session){openAdmin();return;}
+  document.getElementById('admin-email').value='';
   document.getElementById('admin-password').value='';
   document.getElementById('login-error').style.display='none';
   openModal('login-modal');
-  setTimeout(function(){document.getElementById('admin-password').focus();},200);
+  setTimeout(function(){document.getElementById('admin-email').focus();},200);
 }
-function tryLogin(){
-  if(document.getElementById('admin-password').value===getPassword()){
-    setAuthed();closeModal('login-modal');openAdmin();
-  } else {
+async function tryLogin(){
+  var email=document.getElementById('admin-email').value.trim();
+  var password=document.getElementById('admin-password').value;
+  var btn=document.getElementById('login-btn');
+  if(!email||!password){document.getElementById('login-error').style.display='block';return;}
+  if(btn){btn.textContent='Signing in...';btn.disabled=true;}
+  var res=await _supabase.auth.signInWithPassword({email:email,password:password});
+  if(res.error){
     document.getElementById('login-error').style.display='block';
     document.getElementById('admin-password').value='';
     document.getElementById('admin-password').focus();
+    if(btn){btn.textContent='Enter Admin Panel';btn.disabled=false;}
+  } else {
+    closeModal('login-modal');
+    openAdmin();
+    if(btn){btn.textContent='Enter Admin Panel';btn.disabled=false;}
   }
 }
 function openAdmin(){document.getElementById('admin-panel').classList.add('open');refreshSidebar();showWelcome();}
 function closeAdmin(){document.getElementById('admin-panel').classList.remove('open');renderShop();startHeroCoinCycle();}
-function logoutAdmin(){clearAuthed();closeAdmin();showToast('Logged out');}
+async function logoutAdmin(){await _supabase.auth.signOut();closeAdmin();showToast('Logged out');}
 
 /* ── ADMIN SIDEBAR ── */
 function refreshSidebar(){
