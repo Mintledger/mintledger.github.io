@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Mint Ledger — Rare Coins & Currency</title>
+<title>The Mint Ledger - Rare Coins & Currency</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -93,10 +93,13 @@ nav a:hover,nav a.active{color:var(--text);}
 .card-badge{padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
 .badge-rare{background:var(--accent2);color:#fff;}
 .badge-foreign{background:#5c6dba;color:#fff;}
-.badge-proof{background:#7c4dba;color:#fff;}
-.badge-low-mintage{background:#2a7a5c;color:#fff;}
+.badge-australian{background:#2a7a5c;color:#fff;}
+.badge-bullion{background:#8a6818;color:#fff;}
+.badge-commemorative{background:#7c4dba;color:#fff;}
+.badge-proof{background:#4a6fa5;color:#fff;}
 .badge-error{background:#c0392b;color:#fff;}
 .badge-on-sale{background:var(--accent2);color:#fff;}
+.badge-featured{background:var(--accent);color:#000;}
 .badge-sold{background:#333;color:#666;}
 .card-img{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:#0e0e0e;position:relative;overflow:hidden;}
 .coin-placeholder{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:48px;background:radial-gradient(circle at 35% 32%,#d4a830,#8a6818);box-shadow:0 8px 32px rgba(0,0,0,.6);transition:transform .4s;}
@@ -375,7 +378,7 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
   <div class="hero-inner">
   <div class="hero-content">
     <h1>WORLD<br>CLASS <span>COINS</span></h1>
-    <p>Carefully sourced coins and world currency &mdash; from everyday finds to rare collectibles.</p>
+    <p>Carefully sourced coins and world currency - from everyday finds to rare collectibles.</p>
     <button class="btn-primary" onclick="document.querySelector('.shop').scrollIntoView({behavior:'smooth'})">Browse Collection</button>
     <div class="hero-stats">
       <div><div class="stat-num" id="hero-count">0</div><div class="stat-label">Coins Listed</div></div>
@@ -396,7 +399,9 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
 <div class="filter-bar">
   <div class="filter-tabs">
     <button class="filter-tab active" onclick="filterCoins('all',this)">All</button>
-    <button class="filter-tab" onclick="filterCoins('rare',this)">Rare &amp; Collectible</button>
+    <button class="filter-tab" onclick="filterCoins('australian',this)">Australian</button>
+    <button class="filter-tab" onclick="filterCoins('rare',this)">Rare</button>
+    <button class="filter-tab" onclick="filterCoins('bullion',this)">Bullion</button>
     <button class="filter-tab" onclick="filterCoins('foreign',this)">Foreign Currency</button>
   </div>
   <div class="filter-right">
@@ -421,15 +426,15 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
   <div class="sell-section-inner">
     <div class="sell-header">
       <h2>SELL YOUR<br><span>COINS</span></h2>
-      <p>Have coins you'd like to sell? Submit what you know &mdash; even just a photo and a rough description is enough to get started. We're happy to help identify and value your coin, no expertise needed.</p>
+      <p>Have coins you'd like to sell? Submit what you know - even just a photo and a rough description is enough to get started. We're happy to help identify and value your coin, no expertise needed.</p>
     </div>
     <div class="sell-steps">
-      <div class="sell-step"><div class="sell-step-num">01</div><div class="sell-step-label">Submit What You Know</div><div class="sell-step-sub">A photo and rough description is all you need &mdash; we'll figure out the rest</div></div>
+      <div class="sell-step"><div class="sell-step-num">01</div><div class="sell-step-label">Submit What You Know</div><div class="sell-step-sub">A photo and rough description is all you need - we'll figure out the rest</div></div>
       <div class="sell-step"><div class="sell-step-num">02</div><div class="sell-step-label">We Help &amp; Assess</div><div class="sell-step-sub">We identify your coin if needed and come back with a fair offer</div></div>
       <div class="sell-step"><div class="sell-step-num">03</div><div class="sell-step-label">Get Paid</div><div class="sell-step-sub">Accept the offer and receive payment quickly</div></div>
     </div>
     <div class="sell-form">
-      <div class="sell-form-title">SUBMIT A COIN</div><div style="background:rgba(240,192,64,.07);border:1px solid rgba(240,192,64,.2);padding:14px 18px;margin-bottom:24px;font-size:13px;line-height:1.7;"><strong style="color:var(--accent)">Don't worry if you're not sure about the details.</strong> Only your name, email and a description are required &mdash; everything else helps but isn't essential. If you're unsure what you have, just describe it as best you can and upload a photo. We'll take it from there.</div>
+      <div class="sell-form-title">SUBMIT A COIN</div><div style="background:rgba(240,192,64,.07);border:1px solid rgba(240,192,64,.2);padding:14px 18px;margin-bottom:24px;font-size:13px;line-height:1.7;"><strong style="color:var(--accent)">Don't worry if you're not sure about the details.</strong> Only your name, email and a description are required - everything else helps but isn't essential. If you're unsure what you have, just describe it as best you can and upload a photo. We'll take it from there.</div>
 
       <div class="form-section-label" style="margin-top:0">Photos</div>
       <div class="sell-photo-grid">
@@ -452,7 +457,7 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
           <div class="slot-label">Other</div>
         </div>
       </div>
-      <p style="font-size:11px;color:var(--muted);margin-bottom:4px">Photos really help but aren't required. Even a blurry phone photo is better than nothing &mdash; front and back if you can.</p>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:4px">Photos really help but aren't required. Even a blurry phone photo is better than nothing - front and back if you can.</p>
 
       <div class="form-section-label">About the Coin</div>
       <div class="form-group"><label class="form-label">Coin Name / Description * <span style="font-weight:400;color:var(--muted)">(describe it as best you can)</span></label><input class="form-input" id="sell-name" type="text" placeholder="e.g. Old silver coin, Australian, not sure of year"></div>
@@ -483,10 +488,36 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
         <div class="form-group"><label class="form-label">Your Name *</label><input class="form-input" id="sell-sender-name" type="text" placeholder="Jane Smith"></div>
         <div class="form-group"><label class="form-label">Email Address *</label><input class="form-input" id="sell-sender-email" type="email" placeholder="jane@email.com"></div>
       </div>
+      <div class="form-section-label">Preferred Payment Method</div>
+      <div style="display:flex;gap:12px;margin-bottom:16px">
+        <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--border);background:var(--card);cursor:pointer;flex:1">
+          <input type="radio" name="sell-pay-method" id="sell-pay-bank" value="bank" checked onchange="sellPayMethodChange()" style="accent-color:var(--accent)"> Bank Transfer
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--border);background:var(--card);cursor:pointer;flex:1">
+          <input type="radio" name="sell-pay-method" id="sell-pay-paypal" value="paypal" onchange="sellPayMethodChange()" style="accent-color:var(--accent)"> PayPal
+        </label>
+      </div>
+      <div id="sell-bank-fields">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">BSB *</label><input class="form-input" id="sell-bsb" type="text" placeholder="000-000"></div>
+          <div class="form-group"><label class="form-label">Account Number *</label><input class="form-input" id="sell-account" type="text" placeholder="12345678"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Account Name *</label><input class="form-input" id="sell-account-name" type="text" placeholder="Jane Smith"></div>
+      </div>
+      <div id="sell-paypal-fields" style="display:none">
+        <div class="form-group"><label class="form-label">PayPal Email *</label>
+          <input class="form-input" id="sell-paypal-email" type="email" placeholder="paypal@email.com">
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Note: PayPal transaction fees will be deducted from your payment as per our Terms of Service.</div>
+        </div>
+      </div>
 
       <div style="margin-top:24px">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;padding:14px;background:var(--card);border:1px solid var(--border);">
+          <input type="checkbox" id="sell-tos-agree" style="margin-top:3px;accent-color:var(--accent);flex-shrink:0;">
+          <label for="sell-tos-agree" style="font-size:12px;color:var(--muted);line-height:1.6;cursor:pointer;">I agree to the <a href="#" onclick="event.preventDefault();openModal('tos-modal')" style="color:var(--accent);text-decoration:underline;">Terms of Service</a> and understand that submitting a coin does not guarantee an offer will be made.</label>
+        </div>
         <button class="btn-full" onclick="submitSellForm()">Send Us Your Coin &rarr;</button>
-        <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">We'll get back to you within a few days &mdash; and we're happy to answer any questions along the way.</p>
+        <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">We'll get back to you within a few days - and we're happy to answer any questions along the way.</p>
       </div>
     </div>
   </div>
@@ -501,7 +532,7 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
       <button class="modal-close" onclick="closeModal('tos-modal')">&#x2715;</button>
     </div>
     <div class="modal-body" style="overflow-y:auto;flex:1;font-size:13px;line-height:1.8;color:var(--muted);">
-      <strong>Terms of Service &mdash; The Mint Ledger</strong><br><em>Last updated: March 2026</em><br><br>
+      <strong>Terms of Service - The Mint Ledger</strong><br><em>Last updated: March 2026</em><br><br>
 
 <strong>1. General</strong><br>
 By browsing this website or placing an order with The Mint Ledger you agree to be bound by these terms. These terms apply to all transactions conducted through mintledger.github.io. We reserve the right to update these terms at any time without prior notice. Continued use of the site after any changes constitutes acceptance of the updated terms.<br><br>
@@ -516,13 +547,13 @@ All prices are listed in Australian Dollars (AUD) and include GST where applicab
 We ship to Australian addresses only. Estimated delivery times are provided by Australia Post and are not guaranteed. Risk of loss and title for items passes to the buyer upon dispatch. If you select an untracked shipping option, The Mint Ledger accepts no liability whatsoever for lost, delayed, stolen or undelivered parcels. Tracked shipping is available at checkout and is strongly recommended. By selecting untracked shipping you explicitly accept full responsibility for any loss in transit and waive any claim against The Mint Ledger arising from non-delivery.<br><br>
 
 <strong>5. Returns &amp; Refunds</strong><br>
-All sales are final. We do not accept change-of-mind returns. Refunds or replacements will only be considered if an item received is significantly and materially not as described on the listing. Any such claim must be raised within 7 days of confirmed delivery by contacting us at themintledger@gmail.com with your order details and supporting photographs. We reserve the right to assess each claim on a case-by-case basis. Return shipping costs in approved cases are the responsibility of the buyer unless otherwise agreed.<br><br>
+All sales are final. We do not accept change-of-mind returns. Refunds or replacements will only be considered if an item received is significantly and materially not as described on the listing. Any such claim must be raised within 7 days of confirmed delivery by contacting us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fa8e929f9793948e969f9e9d9f88ba9d979b9396d4999597">[email&#160;protected]</a> with your order details and supporting photographs. We reserve the right to assess each claim on a case-by-case basis. Return shipping costs in approved cases are the responsibility of the buyer unless otherwise agreed.<br><br>
 
 <strong>6. Coin Grading &amp; Condition</strong><br>
 Coin grades and condition descriptions represent our honest assessment and are provided for reference purposes only. Grading is subjective and reasonable collectors may assess the same coin differently. We make no warranties regarding the accuracy of any grade or description. The Mint Ledger makes no representations regarding the future investment value of any item and purchasing coins as an investment is done entirely at the buyer's own risk.<br><br>
 
 <strong>7. Sell To Us</strong><br>
-Submitting a coin for assessment through our website does not create any obligation on the part of The Mint Ledger to make an offer or purchase the item. All assessments are conducted at our sole discretion. We are not liable for any costs incurred by the seller in connection with a submission, including postage, if no offer is made or accepted.<br><br>
+Submitting a coin for assessment through our website does not create any obligation on the part of The Mint Ledger to make an offer or purchase the item. All assessments are conducted at our sole discretion. We are not liable for any costs incurred by the seller in connection with a submission, including postage, if no offer is made or accepted. If an offer is made and accepted, payment will be made via bank transfer (BSB and account number required) or PayPal at the seller&#39;s preference, within 3 business days of the item being received and verified. If the seller elects to receive payment via PayPal, any transaction fees incurred will be deducted from the agreed payment amount and are the responsibility of the seller.<br><br>
 
 <strong>8. Intellectual Property</strong><br>
 All content on this website including images, text, logos and design is the property of The Mint Ledger. Coin images remain the property of their respective submitters. You may not reproduce, distribute or use any content from this site without prior written permission.<br><br>
@@ -537,7 +568,7 @@ To the fullest extent permitted by Australian Consumer Law, The Mint Ledger is n
 These terms are governed by the laws of New South Wales, Australia. Any disputes arising from these terms or any transaction shall be subject to the exclusive jurisdiction of the courts of New South Wales.<br><br>
 
 <strong>12. Contact</strong><br>
-For any questions, concerns or claims please contact us at themintledger@gmail.com. We aim to respond within 3 business days.
+For any questions, concerns or claims please contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d2a6bab7bfbbbca6beb7b6b5b7a092b5bfb3bbbefcb1bdbf">[email&#160;protected]</a>. We aim to respond within 3 business days.
     </div>
   </div>
 </div>
@@ -614,7 +645,9 @@ For any questions, concerns or claims please contact us at themintledger@gmail.c
       <div class="admin-sidebar-section">
         <div class="admin-sidebar-label">Overview</div>
         <div class="sidebar-stat"><span>Total Coins</span><span class="sidebar-stat-val" id="stat-total">0</span></div>
+        <div class="sidebar-stat"><span>Australian</span><span class="sidebar-stat-val" id="stat-australian">0</span></div>
         <div class="sidebar-stat"><span>Rare</span><span class="sidebar-stat-val" id="stat-rare">0</span></div>
+        <div class="sidebar-stat"><span>Bullion</span><span class="sidebar-stat-val" id="stat-bullion">0</span></div>
         <div class="sidebar-stat"><span>Foreign</span><span class="sidebar-stat-val" id="stat-foreign">0</span></div>
         <div class="sidebar-stat"><span>In Stock</span><span class="sidebar-stat-val" id="stat-stock">0</span></div>
       </div>
@@ -682,7 +715,7 @@ For any questions, concerns or claims please contact us at themintledger@gmail.c
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9zpT8Jc-_84My4fZGpbwcQ6DfXvS3q6s&libraries=places&loading=async"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -705,18 +738,25 @@ var W3F_KEY = '2998c239-c722-4bd2-a84e-90c1c19157c6';
 
 
 var SHIPPING_OPTIONS = [
-  {id:'regular',  label:'Regular Post',  desc:'3-7 business days \u2014 Untracked',           price:1.70},
-  {id:'priority', label:'Priority Post', desc:'Up to 4 business days \u2014 Slightly faster', price:2.70},
-  {id:'express',  label:'Express Post',  desc:'1-3 business days \u2014 Tracked',             price:9.00},
+  {id:'regular',  label:'Regular Post',  desc:'3-7 business days - Untracked',           price:1.75},
+  {id:'priority', label:'Priority Post', desc:'Up to 4 business days - Slightly faster', price:2.75},
+  {id:'express',  label:'Express Post',  desc:'1-3 business days - Tracked',             price:9.50, recommended:true},
 ];
 
-var TAG_DEFS = [
-  {key:'proof',      label:'Proof',       cls:'badge-proof'},
-  {key:'lowMintage', label:'Low Mintage', cls:'badge-low-mintage'},
-  {key:'errorCoin',  label:'Error Coin',  cls:'badge-error'},
-  {key:'foreign',    label:'Foreign',     cls:'badge-foreign'},
-  {key:'onSale',     label:'On Sale',     cls:'badge-on-sale'},
+var CAT_DEFS = [
+  {key:'australian', label:'Australian',      cls:'badge-australian'},
+  {key:'rare',       label:'Rare',            cls:'badge-rare'},
+  {key:'bullion',    label:'Bullion',         cls:'badge-bullion'},
+  {key:'foreign',    label:'Foreign',         cls:'badge-foreign'},
 ];
+var BADGE_DEFS = [
+  {key:'commemorative', label:'Commemorative', cls:'badge-commemorative'},
+  {key:'error',         label:'Error Coin',    cls:'badge-error'},
+  {key:'proof',         label:'Proof',         cls:'badge-proof'},
+  {key:'onSale',        label:'On Sale',       cls:'badge-on-sale'},
+  {key:'featured',      label:'Featured',      cls:'badge-featured'},
+];
+var TAG_DEFS = CAT_DEFS.concat(BADGE_DEFS);
 
 function fmt(n){return '$'+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
@@ -751,7 +791,7 @@ async function uploadIfNeeded(id, side, pendingFile, existingUrl){
 /* ── SHOP ── */
 function getFiltered(){
   var list=(coins||[]).slice();
-  if(activeFilter!=='all') list=list.filter(function(c){return c.category===activeFilter;});
+  if(activeFilter!=='all') list=list.filter(function(c){return (c.tags||[]).indexOf(activeFilter)>-1||(c.category===activeFilter);});
   if(searchTerm){var s=searchTerm.toLowerCase();list=list.filter(function(c){return c.name.toLowerCase().indexOf(s)>-1||(c.country||'').toLowerCase().indexOf(s)>-1||(c.year||'').toLowerCase().indexOf(s)>-1;});}
   if(sortMode==='price-asc') list.sort(function(a,b){return a.price-b.price;});
   else if(sortMode==='price-desc') list.sort(function(a,b){return b.price-a.price;});
@@ -769,7 +809,7 @@ function renderShop(){
   sc.textContent=list.length+' item'+(list.length!==1?'s':'');
   if(hc) hc.textContent=coins.length||'0';
   if(!list.length){
-    grid.innerHTML='<div class="empty-state"><div class="empty-state-icon">&#x1FA99;</div><div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px">'+(coins.length?'No coins match':'No coins yet')+'</div><div>'+(coins.length?'Try a different filter.':'Head to Admin to add your first coin.')+'</div></div>';
+    grid.innerHTML='<div class="empty-state"><div class="empty-state-icon">&#x1FA99;</div><div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px">'+(coins.length?'No coins match':'No coins yet')+'</div><div>'+(coins.length?'Try a different filter or search term.':'Check back soon - new coins are added regularly.')+'</div></div>';
     return;
   }
   grid.innerHTML=list.map(function(coin){
@@ -796,7 +836,7 @@ function renderShop(){
       +'<div class="card-badges">'+badges+'</div>'
       +'<div class="card-img">'+img+'</div>'
       +'<div class="card-body">'
-      +'<div class="card-category">'+(coin.country||'')+' &middot; '+(coin.category==='rare'?'Rare Collectible':'Foreign Currency')+'</div>'
+      +'<div class="card-category">'+(coin.country||'')+(((coin.country||'')&&CAT_DEFS.filter(function(d){return(coin.tags||[]).indexOf(d.key)>-1||(coin.category===d.key);}).length)?' &middot; ':'')+CAT_DEFS.filter(function(d){return(coin.tags||[]).indexOf(d.key)>-1||(coin.category===d.key);}).map(function(d){return d.label;}).join(' / ')+'</div>'
       +'<div class="card-name">'+coin.name+'</div>'
       +'<div class="card-year">'+[coin.year,coin.grade].filter(Boolean).join(' &middot; ')+'</div>'
       +(meta?'<div class="card-meta">'+meta+'</div>':'')
@@ -904,7 +944,7 @@ function openDetail(id){
     coin.mint?'<div class="detail-meta-item">Mint<span>'+coin.mint+'</span></div>':'',
     coin.country?'<div class="detail-meta-item">Origin<span>'+coin.country+'</span></div>':'',
     '<div class="detail-meta-item">Stock<span>'+(soldOut?'Sold Out':coin.stock+' available')+'</span></div>',
-    '<div class="detail-meta-item">Category<span>'+(coin.category==='rare'?'Rare Collectible':'Foreign Currency')+'</span></div>',
+    '<div class="detail-meta-item">Category<span>'+(CAT_DEFS.filter(function(d){return(coin.tags||[]).indexOf(d.key)>-1||(coin.category===d.key);}).map(function(d){return d.label;}).join(', ')||'—')+'</span></div>',
   ].filter(Boolean).join('');
   var inCart=cart[id]||0;
   document.getElementById('detail-modal').innerHTML=
@@ -1002,8 +1042,10 @@ async function logoutAdmin(){await _supabase.auth.signOut();closeAdmin();showToa
 function refreshSidebar(){
   var sc=document.getElementById('stat-total'); if(!sc) return;
   document.getElementById('stat-total').textContent=(coins||[]).length;
-  document.getElementById('stat-rare').textContent=(coins||[]).filter(function(c){return c.category==='rare';}).length;
-  document.getElementById('stat-foreign').textContent=(coins||[]).filter(function(c){return c.category==='foreign';}).length;
+  var sel=document.getElementById('stat-australian'); if(sel) sel.textContent=(coins||[]).filter(function(c){return(c.tags||[]).indexOf('australian')>-1;}).length;
+  document.getElementById('stat-rare').textContent=(coins||[]).filter(function(c){return(c.tags||[]).indexOf('rare')>-1||(c.category==='rare');}).length;
+  var sbu=document.getElementById('stat-bullion'); if(sbu) sbu.textContent=(coins||[]).filter(function(c){return(c.tags||[]).indexOf('bullion')>-1;}).length;
+  document.getElementById('stat-foreign').textContent=(coins||[]).filter(function(c){return(c.tags||[]).indexOf('foreign')>-1||(c.category==='foreign');}).length;
   document.getElementById('stat-stock').textContent=(coins||[]).filter(function(c){return Number(c.stock)>0;}).length;
   var list=document.getElementById('admin-coin-list'); if(!list) return;
   if(!(coins||[]).length){list.innerHTML='<div style="padding:20px;font-size:12px;color:var(--muted);text-align:center">No coins yet.</div>';return;}
@@ -1096,12 +1138,14 @@ function renderForm(coin){
   pendingObverse=null; pendingReverse=null;
   existingObverseUrl=v.obverse||null;
   existingReverseUrl=v.reverse||null;
-  var tagBoxes=TAG_DEFS.map(function(t){
-    var chk=(v.tags||[]).indexOf(t.key)>-1?'checked':'';
+  function makeBox(t){
+    var chk=((v.tags||[]).indexOf(t.key)>-1||((v.category===t.key)&&(t.key==='rare'||t.key==='foreign')))?'checked':'';
     return '<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);cursor:pointer;background:var(--card);">'
       +'<input type="checkbox" id="tag-'+t.key+'" value="'+t.key+'" '+chk+' style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer">'
       +'<span style="font-size:13px;font-weight:500">'+t.label+'</span></label>';
-  }).join('');
+  }
+  var catBoxes=CAT_DEFS.map(makeBox).join('');
+  var badgeBoxes=BADGE_DEFS.map(makeBox).join('');
   document.getElementById('admin-main').innerHTML=
     '<div class="coin-form">'
     +'<div class="coin-form-title">'+(coin?'EDIT COIN':'ADD NEW COIN')+'</div>'
@@ -1125,15 +1169,8 @@ function renderForm(coin){
     +'<div class="form-section-label">Details</div>'
     +'<div class="form-group"><label class="form-label">Coin Name *</label>'
     +'<input class="form-input" id="f-name" type="text" placeholder="e.g. 1894 Australian Florin" value="'+(v.name||'')+'"></div>'
-    +'<div class="form-row">'
-    +'<div class="form-group"><label class="form-label">Category *</label>'
-    +'<select class="form-input" id="f-category">'
-    +'<option value="rare"'+(v.category==='rare'?' selected':'')+'>Rare / Collectible</option>'
-    +'<option value="foreign"'+(v.category==='foreign'?' selected':'')+'>Foreign Currency</option>'
-    +'</select></div>'
     +'<div class="form-group"><label class="form-label">Country / Origin</label>'
     +'<input class="form-input" id="f-country" type="text" placeholder="e.g. Australia" value="'+(v.country||'')+'"></div>'
-    +'</div>'
     +'<div class="form-row" style="margin-top:14px">'
     +'<div class="form-group"><label class="form-label">Year / Era</label>'
     +'<input class="form-input" id="f-year" type="text" placeholder="e.g. 1894" value="'+(v.year||'')+'"></div>'
@@ -1149,8 +1186,10 @@ function renderForm(coin){
     +'<div class="form-section-label">Pricing</div>'
     +'<div class="form-group" style="max-width:240px"><label class="form-label">Price (AUD) *</label>'
     +'<input class="form-input" id="f-price" type="number" min="0" step="0.01" placeholder="0.00" value="'+(v.price||'')+'"></div>'
-    +'<div class="form-section-label">Tags</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px">'+tagBoxes+'</div>'
+    +'<div class="form-section-label">Categories <span style="font-weight:400;color:var(--muted);font-size:11px">(select all that apply)</span></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">'+catBoxes+'</div>'
+    +'<div class="form-section-label">Badges</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px">'+badgeBoxes+'</div>'
     +'<div class="form-section-label">Notes</div>'
     +'<div class="form-group"><textarea class="form-input" id="f-desc" placeholder="Provenance, condition notes, history...">'+(v.description||'')+'</textarea></div>'
     +'<div class="form-actions">'
@@ -1191,7 +1230,7 @@ async function saveCoin(){
     var existingCoin=coins.find(function(c){return c.id===id;});
     var data={
       id:id, name:name,
-      category:document.getElementById('f-category').value,
+      category:null,
       country:document.getElementById('f-country').value.trim(),
       year:document.getElementById('f-year').value.trim(),
       grade:document.getElementById('f-grade').value.trim(),
@@ -1302,7 +1341,7 @@ function confirmLocation(){
       +'<div style="font-family:var(--font-display);font-size:26px;letter-spacing:2px;margin-bottom:12px">AUSTRALIA ONLY</div>'
       +'<p style="color:var(--muted);font-size:14px;line-height:1.7;max-width:340px;margin:0 auto 24px">'
       +'Sorry \u2014 we only ship within Australia at this time.<br><br>'
-      +'For any questions, get in touch at <a href="mailto:hello@the'+'mintledger.com.au" style="color:var(--accent)">hello@the'+'mintledger.com.au</a>.</p>'
+      +'For any questions, get in touch at <a href="mailto:themintledger@gmail.com" style="color:var(--accent)">themintledger@gmail.com</a>.</p>'
       +'<div style="display:flex;gap:10px;justify-content:center">'
       +'<button class="btn-secondary" onclick="renderCountryStep()">&larr; Back</button>'
       +'<button class="btn-full" style="max-width:180px" onclick="closeModal(\'checkout-modal\')">Back to Shop</button>'
@@ -1316,9 +1355,13 @@ function renderCheckoutStep1(){
   document.getElementById('checkout-modal-title').textContent='CHECKOUT \u2014 SHIPPING';
   var sub=cartSubtotal();
   var rows=SHIPPING_OPTIONS.map(function(opt){
+    var recBadge=opt.recommended
+      ?'<span style="background:var(--accent);color:#000;font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 8px;margin-left:8px;vertical-align:middle">RECOMMENDED</span>'
+        +'<a href="#" onclick="event.stopPropagation();event.preventDefault();showShippingInfo()" style="font-size:11px;color:var(--muted);margin-left:8px;text-decoration:underline;vertical-align:middle">Why?</a>'
+      :'';
     return '<div id="ship-row-'+opt.id+'" class="sel-row" onclick="selectShipping(\''+opt.id+'\')">'
       +'<div id="radio-'+opt.id+'" class="sel-radio"></div>'
-      +'<div style="flex:1"><div style="font-weight:600;font-size:14px">'+opt.label+'</div>'
+      +'<div style="flex:1"><div style="font-weight:600;font-size:14px">'+opt.label+recBadge+'</div>'
       +'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+opt.desc+'</div></div>'
       +'<div style="font-family:var(--font-display);font-size:22px;color:var(--accent)">'+fmt(opt.price)+'</div>'
       +'</div>';
@@ -1358,6 +1401,8 @@ function goToCheckoutStep2(){
     +'<input class="form-input" id="co-name" type="text" placeholder="Jane Smith"></div>'
     +'<div class="form-group"><label class="form-label">Email Address *</label>'
     +'<input class="form-input" id="co-email" type="email" placeholder="jane@email.com"></div>'
+    +'<div class="form-group"><label class="form-label">PayPal Email <span style="font-weight:400;color:var(--muted)">(if different from above)</span></label>'
+    +'<input class="form-input" id="co-paypal" type="email" placeholder="paypal@email.com"></div>'
     +'<div class="form-group"><label class="form-label">Street Address *</label>'
     +'<input class="form-input" id="co-addr" type="text" placeholder="Start typing your address..." autocomplete="off"></div>'
     +'<div class="form-row">'
@@ -1458,7 +1503,7 @@ async function submitOrder(shippingId,total){
       +'</div>';
   }
 
-  var customerConfirmMsg='Hi '+name.split(' ')[0]+'!\n\nThanks for your order with The Mint Ledger. Here\'s a summary:\n\n'+itemLines+'\n\nShipping: '+opt.label+' '+fmt(opt.price)+'\nTotal: '+fmt(total)+' AUD\n\nWe\'ll send you a PayPal invoice shortly. Once payment is confirmed your coins will be packed and dispatched to:\n\n'+addr+', '+suburb+' '+state+' '+postcode+', Australia\n\nIf you have any questions, reply to this email.\n\nThanks,\nThe Mint Ledger';
+  var customerConfirmMsg='Hi '+name.split(' ')[0]+'!\n\nThanks for your order with The Mint Ledger. Here\'s a summary:\n\n'+itemLines+'\n\nShipping: '+opt.label+' '+fmt(opt.price)+'\nTotal: '+fmt(total)+' AUD\n\nWe\'ll send you a PayPal invoice shortly. Once payment is confirmed your coins will be packed and dispatched to:\n\n'+addr+', '+suburb+' '+state+' '+postcode+', Australia\n\nIf you have any questions, reply to this email.\n\nThanks,\nThe Mint Ledger\n\nVisit us again at https://mintledger.github.io';
   fetch('https://api.web3forms.com/submit',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -1474,7 +1519,7 @@ async function submitOrder(shippingId,total){
       emailjs.send('service_8ynwiw7','template_k3jhb8e',{
         to_email:email,
         to_name:name.split(' ')[0],
-        subject:'Your Mint Ledger Order — Thanks '+name.split(' ')[0]+'!',
+        subject:'Your Mint Ledger Order - Thanks '+name.split(' ')[0]+'!',
         message:customerConfirmMsg
       }).then(function(){doConfirm();}).catch(function(e){console.warn('EmailJS error:',e);doConfirm();});
     } else {
@@ -1507,6 +1552,15 @@ function openSellSection(e){
   if(e&&e.target) e.target.classList.add('active');
 }
 
+function sellPayMethodChange(){
+  var method=document.querySelector('input[name="sell-pay-method"]:checked');
+  var bank=document.getElementById('sell-bank-fields');
+  var pp=document.getElementById('sell-paypal-fields');
+  if(!method||!bank||!pp) return;
+  if(method.value==='bank'){bank.style.display='block';pp.style.display='none';}
+  else{bank.style.display='none';pp.style.display='block';}
+}
+
 function sellPreview(input,imgId){
   var file=input.files[0]; if(!file) return;
   var idx=parseInt(imgId.slice(-1));
@@ -1528,6 +1582,22 @@ function submitSellForm(){
   if(!name){showToast('Please describe the coin');return;}
   if(!senderName){showToast('Please enter your name');return;}
   if(!senderEmail||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(senderEmail)){showToast('Please enter a valid email');return;}
+  var sellTosEl=document.getElementById('sell-tos-agree');
+  if(!sellTosEl||!sellTosEl.checked){showToast('Please agree to the Terms of Service');return;}
+  var payMethod=document.querySelector('input[name="sell-pay-method"]:checked');
+  var payMethodVal=payMethod?payMethod.value:'bank';
+  var payDetails='';
+  if(payMethodVal==='bank'){
+    var bsb=document.getElementById('sell-bsb').value.trim();
+    var acct=document.getElementById('sell-account').value.trim();
+    var acctName=document.getElementById('sell-account-name').value.trim();
+    if(!bsb||!acct||!acctName){showToast('Please enter your bank details');return;}
+    payDetails='Bank Transfer\nBSB: '+bsb+'\nAccount: '+acct+'\nAccount Name: '+acctName;
+  } else {
+    var ppEmail=document.getElementById('sell-paypal-email').value.trim();
+    if(!ppEmail||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ppEmail)){showToast('Please enter your PayPal email');return;}
+    payDetails='PayPal\nPayPal Email: '+ppEmail+' (fees will be deducted)';
+  }
   var country=document.getElementById('sell-country').value.trim();
   var year=document.getElementById('sell-year').value.trim();
   var qty=document.getElementById('sell-qty').value||'1';
@@ -1541,6 +1611,7 @@ function submitSellForm(){
     +'\nQuantity: '+qty
     +'\nCondition: '+condition
     +(notes?'\n\nNotes: '+notes:'')
+    +'\n\nPayment Preference:\n'+payDetails
     +'\n\nPlease reply to: '+senderEmail;
   var btn=document.querySelector('#sell-section .btn-full');
   if(btn){btn.textContent='Sending...';btn.disabled=true;}
@@ -1555,7 +1626,7 @@ function submitSellForm(){
       +'<button class="btn-full" style="max-width:240px;margin:0 auto" onclick="location.reload()">Submit Another Coin</button>'
       +'</div>';
   }
-  var sellConfirmMsg='Hi '+senderName.split(' ')[0]+'!\n\nThanks for submitting your coin to The Mint Ledger. We\'ve received your submission and will take a look shortly.\n\nCoin: '+name+(country?'\nCountry: '+country:'')+(year?'\nYear: '+year:'')+'\nCondition: '+condition+(notes?'\n\nYour notes: '+notes:'')+'\n\nWe\'ll get back to you at this email address within a few days with our assessment. Feel free to reply if you have any questions in the meantime.\n\nThanks,\nThe Mint Ledger';
+  var sellConfirmMsg='Hi '+senderName.split(' ')[0]+'!\n\nThanks for submitting your coin to The Mint Ledger. We\'ve received your submission and will take a look shortly.\n\nCoin: '+name+(country?'\nCountry: '+country:'')+(year?'\nYear: '+year:'')+'\nCondition: '+condition+(notes?'\n\nYour notes: '+notes:'')+'\n\nWe\'ll get back to you at this email address within a few days with our assessment. Feel free to reply if you have any questions in the meantime.\n\nThanks,\nThe Mint Ledger\n\nVisit us again at https://mintledger.github.io';
   fetch('https://api.web3forms.com/submit',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -1795,17 +1866,27 @@ function initAddressAutocomplete(){
   });
 }
 
+function showShippingInfo(){
+  var existing=document.getElementById('shipping-info-popup');
+  if(existing){existing.remove();return;}
+  var popup=document.createElement('div');
+  popup.id='shipping-info-popup';
+  popup.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:var(--surface);border:1px solid var(--accent);padding:28px 32px;max-width:380px;width:90%;';
+  popup.innerHTML='<div style="font-family:var(--font-display);font-size:18px;letter-spacing:2px;color:var(--accent);margin-bottom:14px">WHY EXPRESS POST?</div>'
+    +'<p style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:16px">'
+    +'Express Post is the only tracked shipping option we offer. This means your parcel is assigned a tracking number and can be followed all the way to your door.'
+    +'</p>'
+    +'<p style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:20px">'
+    +'Untracked options are cheaper, but if your parcel is lost in transit we have no way to locate it and cannot be held liable - as outlined in our Terms of Service. '
+    +'For valuable or rare coins, Express Post is strongly recommended.'
+    +'</p>'
+    +'<button class="btn-full" onclick="document.getElementById(\'shipping-info-popup\').remove()">Got it</button>';
+  document.body.appendChild(popup);
+}
+
 updateCartUI();
 loadCoins();
 </script>
 
 <footer style="background:var(--surface);border-top:1px solid var(--border);padding:24px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);">
-  <div style="letter-spacing:2px;font-family:var(--font-display);color:var(--accent);font-size:14px;">THE MINT LEDGER</div>
-  <div style="display:flex;gap:24px;align-items:center;">
-    <button onclick="openModal('tos-modal')" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;font-family:var(--font-body);">Terms of Service</button>
-    <span>&copy; 2026 The Mint Ledger. All rights reserved.</span>
-  </div>
-</footer>
-
-</body>
-</html>
+  <div style="letter-spacing:2px;font-family:var(--font-display);color:var(--accent);font-size:14px;">THE MINT LEDGER</d
