@@ -330,7 +330,9 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
   <a class="logo" href="#">THE MINT LEDGER</a>
   <nav>
     <a onclick="filterCoins('all',this)" class="active">All</a>
+    <a onclick="filterCoins('australian',this)">Australian</a>
     <a onclick="filterCoins('rare',this)">Rare</a>
+    <a onclick="filterCoins('bullion',this)">Bullion</a>
     <a onclick="filterCoins('foreign',this)">Foreign</a>
     <a onclick="openSellSection(event)">Sell to Us</a>
   </nav>
@@ -660,6 +662,7 @@ For any questions, concerns or claims please contact us at <a href="/cdn-cgi/l/e
         <button class="add-coin-btn" style="background:var(--surface);color:var(--accent);border:1px solid var(--border)" onclick="showOrders()">&#128220; View Orders</button>
       </div>
       <div class="admin-coin-list-label">Your Coins</div>
+      <div id="low-stock-warning" style="display:none;margin:0 12px 8px;padding:10px 12px;background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);font-size:11px;color:#e74c3c;line-height:1.6"></div>
       <div class="admin-coin-list" id="admin-coin-list"></div>
     </div>
     <div class="admin-main" id="admin-main">
@@ -734,6 +737,7 @@ async function loadCoins(){
   renderShop();
   refreshSidebar();
   startHeroCoinCycle();
+  updateCartUI();
 }
 
 var W3F_KEY = '2998c239-c722-4bd2-a84e-90c1c19157c6';
@@ -760,10 +764,33 @@ var BADGE_DEFS = [
 ];
 var TAG_DEFS = CAT_DEFS.concat(BADGE_DEFS);
 
+function duplicateCoin(id){
+  var coin=coins.find(function(c){return c.id===id;}); if(!coin) return;
+  var copy=Object.assign({},coin,{id:uid(),name:coin.name+' (Copy)',created_at:Date.now(),updated_at:Date.now()});
+  editingId=null;
+  pendingObverse=null; pendingReverse=null;
+  existingObverseUrl=copy.obverse; existingReverseUrl=copy.reverse;
+  renderForm(copy);
+  showToast('Duplicated - edit and save to add');
+}
+
+function shareCoin(id){
+  var url=location.origin+location.pathname+'?coin='+id;
+  navigator.clipboard.writeText(url).then(function(){showToast('Link copied!');}).catch(function(){showToast('Copy: '+url);});
+}
+function checkCoinParam(){
+  var params=new URLSearchParams(location.search);
+  var id=params.get('coin');
+  if(id) setTimeout(function(){openDetail(id);},800);
+}
+
+function saveCart(){try{localStorage.setItem('ml_cart',JSON.stringify(cart));}catch(e){}}
+function loadCart(){try{var s=localStorage.getItem('ml_cart');if(s)return JSON.parse(s);}catch(e){}return{};}
+
 function fmt(n){return '$'+Number(n).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
 
-var coins=[], cart={}, activeFilter='all', searchTerm='', sortMode='newest', editingId=null;
+var coins=[], cart=loadCart(), activeFilter='all', searchTerm='', sortMode='newest', editingId=null;
 var selectedShipping=null, selectedLocation=null, detailFlipped=false;
 var pendingObverse=null, pendingReverse=null, existingObverseUrl=null, existingReverseUrl=null;
 
@@ -872,17 +899,17 @@ function addToCart(id,e){
   var c=coins.find(function(x){return x.id===id;}); if(!c) return;
   var inCart=cart[id]||0, stock=Number(c.stock)||0;
   if(inCart>=stock){showToast('No more stock available');return;}
-  cart[id]=inCart+1; updateCartUI(); renderShop();
+  cart[id]=inCart+1; saveCart(); updateCartUI(); renderShop();
   showToast(c.name+' added to cart');
 }
-function removeFromCart(id){delete cart[id];updateCartUI();renderShop();}
+function removeFromCart(id){delete cart[id];saveCart();updateCartUI();renderShop();}
 function changeQty(id,d){
   var c=coins.find(function(x){return x.id===id;});
   var stock=c?Number(c.stock):0, newQty=(cart[id]||0)+d;
   if(newQty<=0){delete cart[id];}
   else if(newQty>stock){showToast('No more stock available');return;}
   else{cart[id]=newQty;}
-  updateCartUI();renderShop();
+  saveCart();updateCartUI();renderShop();
 }
 function updateCartUI(){
   var total=Object.values(cart).reduce(function(s,v){return s+v;},0);
@@ -953,6 +980,7 @@ function openDetail(id){
     '<div class="detail-img" id="detail-img" onclick="flipDetail()" '+(hasFlip?'':'style="cursor:default"')+'>'
     +imgHTML+'</div>'
     +'<button class="detail-close" onclick="closeDetail()">&times;</button>'
+    +'<button onclick="shareCoin(\''+coin.id+'\') style="position:absolute;top:14px;right:52px;background:none;border:1px solid var(--border);color:var(--muted);padding:6px 14px;font-size:11px;cursor:pointer;font-family:var(--font-body);letter-spacing:1px;z-index:10">SHARE</button>'
     +'<div class="detail-body">'
     +(tagHTML?'<div class="detail-tags">'+tagHTML+'</div>':'')
     +'<div class="detail-name">'+coin.name+'</div>'
@@ -997,7 +1025,7 @@ function detailAddToCart(id){
   var coin=coins.find(function(x){return x.id===id;}); if(!coin) return;
   var stock=Number(coin.stock)||0, inCart=cart[id]||0;
   if(inCart>=stock){showToast('No more stock available');return;}
-  cart[id]=inCart+1; updateCartUI(); renderShop();
+  cart[id]=inCart+1; saveCart(); updateCartUI(); renderShop();
   var el=document.getElementById('detail-qty-val'); if(el) el.textContent=cart[id];
   var btn=document.getElementById('detail-add-btn-'+id); if(btn) btn.textContent='In Cart';
   showToast(coin.name+' added to cart');
@@ -1049,6 +1077,16 @@ function refreshSidebar(){
   var sbu=document.getElementById('stat-bullion'); if(sbu) sbu.textContent=(coins||[]).filter(function(c){return(c.tags||[]).indexOf('bullion')>-1;}).length;
   document.getElementById('stat-foreign').textContent=(coins||[]).filter(function(c){return(c.tags||[]).indexOf('foreign')>-1||(c.category==='foreign');}).length;
   document.getElementById('stat-stock').textContent=(coins||[]).filter(function(c){return Number(c.stock)>0;}).length;
+  var lowStockEl=document.getElementById('low-stock-warning');
+  if(lowStockEl){
+    var lowStock=(coins||[]).filter(function(c){return Number(c.stock)===1;});
+    if(lowStock.length){
+      lowStockEl.style.display='block';
+      lowStockEl.innerHTML='<strong style="letter-spacing:1px">LOW STOCK</strong><br>'+lowStock.map(function(c){return '&bull; '+c.name;}).join('<br>');
+    } else {
+      lowStockEl.style.display='none';
+    }
+  }
   var list=document.getElementById('admin-coin-list'); if(!list) return;
   if(!(coins||[]).length){list.innerHTML='<div style="padding:20px;font-size:12px;color:var(--muted);text-align:center">No coins yet.</div>';return;}
   list.innerHTML=(coins||[]).slice().reverse().map(function(c){
@@ -1197,6 +1235,7 @@ function renderForm(coin){
     +'<div class="form-actions">'
     +'<button class="btn-full" id="save-coin-btn" style="flex:1" onclick="saveCoin()">'+(coin?'\uD83D\uDCBE Save Changes':'+ Add to Shop')+'</button>'
     +(coin?'<button class="btn-secondary btn-danger" onclick="deleteCoin(\''+coin.id+'\')">&#128465; Delete</button>':'')
+    +(coin?'<button class="btn-secondary" onclick="duplicateCoin(\''+coin.id+'\')">&#128260; Duplicate</button>':'')
     +'<button class="btn-secondary" onclick="showWelcome()">Cancel</button>'
     +'</div></div>';
 }
@@ -1433,6 +1472,7 @@ function goToCheckoutStep2(){
 async function submitOrder(shippingId,total){
   var name=document.getElementById('co-name').value.trim();
   var email=document.getElementById('co-email').value.trim();
+  var paypalEmail=document.getElementById('co-paypal').value.trim();
   var addr=document.getElementById('co-addr').value.trim();
   var suburb=document.getElementById('co-suburb').value.trim();
   var state=document.getElementById('co-state').value.trim();
@@ -1451,7 +1491,7 @@ async function submitOrder(shippingId,total){
     +'\n\nItems:\n'+itemLines
     +'\n\nShipping: '+opt.label+' '+fmt(opt.price)
     +'\nORDER TOTAL (AUD): '+fmt(total)
-    +'\n\nPlease send a PayPal invoice to: '+email;
+    +'\n\nPlease send a PayPal invoice to: '+(paypalEmail||email)+(paypalEmail?' (PayPal) — contact email: '+email:'');
 
   document.getElementById('checkout-body').innerHTML=
     '<div style="text-align:center;padding:48px 20px">'
@@ -1490,12 +1530,16 @@ async function submitOrder(shippingId,total){
         status:'pending'
       });
     } catch(e){ console.warn('Order save error:',e); }
-    cart={}; updateCartUI();
+    cart={}; saveCart(); updateCartUI();
     document.getElementById('checkout-modal-title').textContent='ORDER PLACED!';
     document.getElementById('checkout-body').innerHTML=
       '<div style="text-align:center;padding:20px 0">'
       +'<div style="font-size:52px;margin-bottom:16px">&#x1FA99;</div>'
+      +'<div style="font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">ORDER #'+id.slice(-8).toUpperCase()+'</div>'
       +'<div style="font-family:var(--font-display);font-size:28px;letter-spacing:2px;color:var(--accent);margin-bottom:12px">THANKS, '+name.split(' ')[0].toUpperCase()+'!</div>'
+      +'<div style="display:inline-block;background:rgba(240,192,64,.08);border:1px solid rgba(240,192,64,.2);padding:8px 20px;margin-bottom:16px;font-size:12px;color:var(--accent);letter-spacing:1px">'
+      +'Estimated Delivery: '+(snapshotOpt.id==='express'?'1-3 business days':snapshotOpt.id==='priority'?'2-5 business days':'4-8 business days')
+      +'</div>'
       +'<p style="color:var(--muted);font-size:14px;line-height:1.7;max-width:380px;margin:0 auto 24px">'
       +'Your order is confirmed. A <strong style="color:var(--text)">PayPal invoice</strong> will be sent to '
       +'<strong style="color:var(--text)">'+email+'</strong> shortly. Your coins will be dispatched once payment is received.</p>'
@@ -1622,6 +1666,9 @@ function submitSellForm(){
       '<div style="text-align:center;padding:48px 20px">'
       +'<div style="font-size:52px;margin-bottom:16px">&#x1FA99;</div>'
       +'<div style="font-family:var(--font-display);font-size:28px;letter-spacing:2px;color:var(--accent);margin-bottom:12px">SUBMISSION RECEIVED!</div>'
+      +'<div style="display:inline-block;background:rgba(240,192,64,.08);border:1px solid rgba(240,192,64,.2);padding:8px 20px;margin-bottom:16px;font-size:12px;color:var(--accent);letter-spacing:1px">'
+      +'Estimated Delivery: '+(snapshotOpt.id==='express'?'1-3 business days':snapshotOpt.id==='priority'?'2-5 business days':'4-8 business days')
+      +'</div>'
       +'<p style="color:var(--muted);font-size:14px;line-height:1.7;max-width:380px;margin:0 auto 24px">'
       +'Thanks '+senderName.split(' ')[0]+'! We\'ll take a look and get back to you at '
       +'<strong style="color:var(--text)">'+senderEmail+'</strong> within a few days. Feel free to reply to our email if you have any questions in the meantime.</p>'
@@ -1887,8 +1934,15 @@ function showShippingInfo(){
 }
 
 updateCartUI();
-loadCoins();
+loadCoins().then(checkCoinParam);
 </script>
 
 <footer style="background:var(--surface);border-top:1px solid var(--border);padding:24px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);">
-  <div style="letter-spacing:2px;font-family:var(--font-display);color:var(--accent);font-size:14px;">THE MINT LEDGER</d
+  <div style="letter-spacing:2px;font-family:var(--font-display);color:var(--accent);font-size:14px;">THE MINT LEDGER</div>
+  <div style="display:flex;gap:24px;align-items:center;">
+    <button onclick="openModal('tos-modal')" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;font-family:var(--font-body);">Terms of Service</button>
+    <span>&copy; 2026 The Mint Ledger. All rights reserved.</span>
+  </div>
+</footer>
+</body>
+</html>
