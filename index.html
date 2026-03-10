@@ -980,7 +980,6 @@ function openDetail(id){
     '<div class="detail-img" id="detail-img" onclick="flipDetail()" '+(hasFlip?'':'style="cursor:default"')+'>'
     +imgHTML+'</div>'
     +'<button class="detail-close" onclick="closeDetail()">&times;</button>'
-    +'<button onclick="shareCoin(\''+coin.id+'\')" style="position:absolute;top:14px;right:52px;background:none;border:1px solid var(--border);color:var(--muted);padding:6px 14px;font-size:11px;cursor:pointer;font-family:var(--font-body);letter-spacing:1px;z-index:10">SHARE</button>'
     +'<div class="detail-body">'
     +(tagHTML?'<div class="detail-tags">'+tagHTML+'</div>':'')
     +'<div class="detail-name">'+coin.name+'</div>'
@@ -1001,6 +1000,7 @@ function openDetail(id){
       )
     +'<button class="detail-add-btn" id="detail-add-btn-'+id+'" '+(soldOut?'disabled':'')
     +' onclick="detailAddToCart(\''+id+'\')">'+(soldOut?'Sold Out':(inCart?'In Cart':'Add to Cart'))+'</button>'
+    +'<button onclick="shareCoin(\''+coin.id+'\')" style="background:none;border:1px solid var(--border);color:var(--muted);padding:0 16px;height:44px;font-size:11px;cursor:pointer;font-family:var(--font-body);letter-spacing:1px;white-space:nowrap">SHARE</button>'
     +'</div></div>';
   document.getElementById('detail-overlay').classList.add('open');
 }
