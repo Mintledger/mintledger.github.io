@@ -182,6 +182,10 @@ nav a:hover,nav a.active{color:var(--text);}
 @media(max-width:700px){.detail-modal{grid-template-columns:1fr;}.detail-img{aspect-ratio:4/3;}}
 
 /* CART */
+.wish-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:600;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px);}
+.wish-overlay.open{opacity:1;pointer-events:all;}
+.wish-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100vw;background:var(--surface);border-left:1px solid var(--border);z-index:601;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.wish-overlay.open .wish-drawer{transform:translateX(0);}
 .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:600;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px);}
 .cart-overlay.open{opacity:1;pointer-events:all;}
 .cart-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100vw;background:var(--surface);border-left:1px solid var(--border);z-index:601;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
@@ -358,7 +362,7 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
   </nav>
   <div class="header-right">
     <button class="admin-link" onclick="openAdminGate().catch(function(){openModal('login-modal');})" title="Admin">&#9881;</button>
-    <button class="cart-btn" onclick="toggleCart()">Cart <span class="cart-count" id="cart-count">0</span></button>
+    <button class="cart-btn" onclick="toggleWishPanel()" style="background:none;border:1px solid var(--border);color:var(--muted);margin-right:8px;">Wish <span id="wish-count">0</span></button><button class="cart-btn" onclick="toggleCart()">Cart <span class="cart-count" id="cart-count">0</span></button>
   </div>
 </header>
 
@@ -622,6 +626,17 @@ For any questions, concerns or claims please contact us at <a href="/cdn-cgi/l/e
   </div>
 </div>
 
+<!-- WISHLIST PANEL -->
+<div class="wish-overlay" id="wish-overlay" onclick="if(event.target.id==='wish-overlay')toggleWishPanel()">
+  <div class="wish-drawer">
+    <div class="cart-header">
+      <div class="cart-title">WISHLIST</div>
+      <button class="cart-close" onclick="toggleWishPanel()">&#x2715;</button>
+    </div>
+    <div class="cart-items" id="wish-items"></div>
+  </div>
+</div>
+
 <!-- CHECKOUT MODAL -->
 <div class="modal-overlay" id="checkout-modal" onclick="if(event.target.id==='checkout-modal')closeModal('checkout-modal')">
   <div class="modal" style="max-width:600px">
@@ -766,6 +781,7 @@ async function loadCoins(){
   refreshSidebar();
   startHeroCoinCycle();
   updateCartUI();
+  updateWishUI();
 }
 
 var W3F_KEY = '2998c239-c722-4bd2-a84e-90c1c19157c6';
@@ -838,9 +854,47 @@ function getRelatedHTML(coin){
 function openZoom(e){e.stopPropagation();var img=document.querySelector('#detail-img .photo-obverse');if(!img)return;document.getElementById('zoom-img').src=img.src;document.getElementById('zoom-overlay').classList.add('open');}
 function closeZoom(){document.getElementById('zoom-overlay').classList.remove('open');}
 
+function toggleWishPanel(){
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.getElementById('wish-overlay').classList.toggle('open');
+}
+function updateWishUI(){
+  var count=wishlist.length;
+  var btn=document.getElementById('wish-count');
+  if(btn) btn.textContent=count||'';
+  var items=document.getElementById('wish-items'); if(!items) return;
+  if(!count){
+    items.innerHTML='<div class="cart-empty"><div class="cart-empty-icon">&#9825;</div><div>Your wishlist is empty</div><div style="font-size:11px;color:var(--muted);margin-top:4px">Heart a coin to save it for later</div></div>';
+    return;
+  }
+  items.innerHTML=wishlist.map(function(id){
+    var coin=coins.find(function(c){return c.id===id;});
+    if(!coin) return '';
+    var img=coin.obverse
+      ?'<img class="cart-thumb" src="'+coin.obverse+'" alt="'+coin.name+'">'
+      :'<div class="cart-thumb-ph">&#x1FA99;</div>';
+    var soldOut=Number(coin.stock)===0;
+    return '<div class="cart-item">'
+      +img
+      +'<div class="cart-item-info">'
+      +'<div class="cart-item-name">'+coin.name+'</div>'
+      +'<div class="cart-item-sub">'+(coin.year||'')+(coin.year&&coin.grade?' - ':'')+( coin.grade||'')+'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:6px">'
+      +(soldOut
+        ?'<span style="font-size:11px;color:var(--muted)">Sold Out</span>'
+        :'<button onclick="addToCart(\''+id+'\',event);updateWishUI()" style="font-size:11px;background:var(--accent);color:#000;border:none;padding:5px 12px;cursor:pointer;font-family:var(--font-body);font-weight:700">Add to Cart</button>'
+      )
+      +'<button onclick="toggleWish(\''+id+'\',event)" style="font-size:11px;background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;cursor:pointer;font-family:var(--font-body)">Remove</button>'
+      +'</div>'
+      +'</div>'
+      +'<div class="cart-item-price">'+fmt(coin.price)+'</div>'
+      +'</div>';
+  }).filter(Boolean).join('');
+}
+
 function saveWishlist(){try{localStorage.setItem('ml_wish',JSON.stringify(wishlist));}catch(e){}}
 function loadWishlist(){try{var s=localStorage.getItem('ml_wish');if(s)return JSON.parse(s);}catch(e){}return[];}
-function toggleWish(id,e){if(e)e.stopPropagation();var idx=wishlist.indexOf(id);if(idx>-1){wishlist.splice(idx,1);}else{wishlist.push(id);}saveWishlist();renderShop();showToast(wishlist.indexOf(id)>-1?'Added to wishlist':'Removed from wishlist');}
+function toggleWish(id,e){if(e)e.stopPropagation();var idx=wishlist.indexOf(id);if(idx>-1){wishlist.splice(idx,1);}else{wishlist.push(id);}saveWishlist();renderShop();updateWishUI();showToast(wishlist.indexOf(id)>-1?'Added to wishlist':'Removed from wishlist');}
 
 function saveCart(){try{localStorage.setItem('ml_cart',JSON.stringify(cart));}catch(e){}}
 function loadCart(){try{var s=localStorage.getItem('ml_cart');if(s)return JSON.parse(s);}catch(e){}return{};}
@@ -1006,7 +1060,7 @@ function updateCartUI(){
   document.getElementById('cart-shipping').textContent='Selected at checkout';
   document.getElementById('cart-total').textContent=fmt(sub);
 }
-function toggleCart(){document.getElementById('cart-overlay').classList.toggle('open');}
+function toggleCart(){document.getElementById('wish-overlay').classList.remove('open');document.getElementById('cart-overlay').classList.toggle('open');}
 
 /* ── DETAIL MODAL ── */
 function openDetail(id){
