@@ -5,6 +5,10 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23ffd060'/><stop offset='100%' stop-color='%23c89820'/></linearGradient></defs><polygon points='32,2 60,17 60,47 32,62 4,47 4,17' fill='none' stroke='url(%23g)' stroke-width='2.5'/><polygon points='32,8 54,21 54,43 32,56 10,43 10,21' fill='none' stroke='url(%23g)' stroke-width='1'/><text x='32' y='38' text-anchor='middle' font-family='Georgia,serif' font-size='19' font-weight='bold' fill='%23f0c040' letter-spacing='3'>ML</text></svg>">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Mint Ledger - Australian dealer in rare coins and world currency. Carefully sourced, researched, and listed. Ships Australia-wide.">
+<meta property="og:title" content="The Mint Ledger">
+<meta property="og:description" content="Rare coins and world currency, sourced and listed from NSW. Ships Australia-wide.">
+<meta property="og:url" content="https://mintledger.github.io">
 <title>The Mint Ledger - Rare Coins & Currency</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -22,7 +26,9 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 header{position:sticky;top:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(10,10,10,0.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
 .logo{font-family:var(--font-display);font-size:20px;letter-spacing:3px;color:var(--accent);text-decoration:none;}
 nav{display:flex;gap:28px;align-items:center;}
-nav a{color:var(--muted);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:color .2s;}
+nav{display:flex;align-items:center;gap:28px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}
+nav::-webkit-scrollbar{display:none;}
+nav a{color:var(--muted);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:color .2s;white-space:nowrap;flex-shrink:0;}
 nav a:hover,nav a.active{color:var(--text);}
 .header-right{display:flex;gap:12px;align-items:center;}
 .admin-link{font-size:16px;color:var(--border);cursor:pointer;border:none;padding:6px 8px;background:none;font-family:var(--font-body);transition:color .2s;line-height:1;}
@@ -90,6 +96,9 @@ nav a:hover,nav a.active{color:var(--text);}
 .card{background:var(--card);border:1px solid var(--border);position:relative;overflow:hidden;cursor:pointer;transition:all .3s;display:flex;flex-direction:column;}
 .card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 20px 60px rgba(240,192,64,.08);z-index:2;}
 .card.sold-out{opacity:.7;}
+.wish-btn{position:absolute;top:14px;right:14px;z-index:4;background:rgba(0,0,0,.5);border:none;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted);transition:color .2s;border-radius:50%;}
+.wish-btn.wished{color:#e74c3c;}
+.wish-btn:hover{color:#e74c3c;}
 .card.sold-out .card-img{filter:grayscale(60%);}
 .card-badges{position:absolute;top:14px;left:14px;z-index:3;display:flex;flex-direction:column;gap:4px;}
 .card-badge{padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
@@ -103,6 +112,7 @@ nav a:hover,nav a.active{color:var(--text);}
 .badge-on-sale{background:var(--accent2);color:#fff;}
 .badge-featured{background:var(--accent);color:#000;}
 .badge-sold{background:#333;color:#666;}
+.badge-new{background:var(--accent);color:#000;}
 .card-img{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:#0e0e0e;position:relative;overflow:hidden;}
 .coin-placeholder{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:48px;background:radial-gradient(circle at 35% 32%,#d4a830,#8a6818);box-shadow:0 8px 32px rgba(0,0,0,.6);transition:transform .4s;}
 .card:hover .coin-placeholder{transform:rotate(12deg) scale(1.05);}
@@ -133,6 +143,14 @@ nav a:hover,nav a.active{color:var(--text);}
 .empty-state-icon{font-size:48px;margin-bottom:16px;opacity:.3;}
 
 /* DETAIL MODAL */
+.detail-related{margin-top:20px;border-top:1px solid var(--border);padding-top:16px;}
+.detail-related-title{font-size:10px;letter-spacing:2px;color:var(--muted);font-weight:600;margin-bottom:12px;}
+.detail-related-grid{display:flex;gap:10px;}
+.detail-related-item{flex:1;cursor:pointer;border:1px solid var(--border);padding:10px;background:var(--card);transition:border-color .2s;min-width:0;}
+.detail-related-item:hover{border-color:var(--accent);}
+.detail-related-img{width:100%;aspect-ratio:1;object-fit:cover;background:#111;margin-bottom:8px;font-size:20px;display:flex;align-items:center;justify-content:center;}
+.detail-related-name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+.detail-related-price{font-size:12px;color:var(--accent);font-family:var(--font-display);letter-spacing:1px;}
 .detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:700;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;padding:20px;backdrop-filter:blur(8px);}
 .detail-overlay.open{opacity:1;pointer-events:all;}
 .detail-modal{background:var(--surface);border:1px solid var(--border);width:100%;max-width:900px;max-height:92vh;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;position:relative;}
@@ -335,6 +353,8 @@ textarea.form-input{resize:vertical;min-height:80px;font-family:var(--font-body)
     <a onclick="filterCoins('bullion',this)">Bullion</a>
     <a onclick="filterCoins('foreign',this)">Foreign</a>
     <a onclick="openSellSection(event)">Sell to Us</a>
+    <a onclick="openModal('faq-modal')">FAQ</a>
+    <a onclick="openModal('about-modal')">About</a>
   </nav>
   <div class="header-right">
     <button class="admin-link" onclick="openAdminGate().catch(function(){openModal('login-modal');})" title="Admin">&#9881;</button>
@@ -676,8 +696,16 @@ For any questions, concerns or claims please contact us at <a href="/cdn-cgi/l/e
 </div>
 
 
+<!-- ZOOM OVERLAY -->
+<div id="zoom-overlay" onclick="closeZoom()">
+  <img id="zoom-img" src="" alt="">
+</div>
+
 <!-- CROP MODAL -->
 <style>
+#zoom-overlay{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:1200;display:none;align-items:center;justify-content:center;cursor:zoom-out;}
+#zoom-overlay.open{display:flex;}
+#zoom-img{max-width:95vw;max-height:95vh;object-fit:contain;}
 #crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1100;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:20px;}
 #crop-overlay.open{display:flex;}
 #crop-container{position:relative;width:320px;height:320px;overflow:hidden;cursor:grab;background:#000;box-shadow:0 0 0 3px var(--accent),0 0 60px rgba(240,192,64,.3);flex-shrink:0;transition:border-radius .25s;}
@@ -784,6 +812,36 @@ function checkCoinParam(){
   if(id) setTimeout(function(){openDetail(id);},800);
 }
 
+var wishlist=loadWishlist();
+function getRelatedHTML(coin){
+  var coinTags=(coin.tags||[]);
+  var related=(coins||[]).filter(function(c){
+    if(c.id===coin.id||Number(c.stock)===0) return false;
+    var sharedTags=(c.tags||[]).filter(function(t){return coinTags.indexOf(t)>-1;});
+    return sharedTags.length>0;
+  }).slice(0,3);
+  if(!related.length) return '';
+  var items=related.map(function(c){
+    var img=c.obverse
+      ?'<img src="'+c.obverse+'" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;margin-bottom:8px" alt="'+c.name+'">'
+      :'<div style="width:100%;aspect-ratio:1;background:#111;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:8px">&#x1FA99;</div>';
+    return '<div class="detail-related-item" onclick="closeDetail();setTimeout(function(){openDetail(\''+c.id+'\')},50)">'
+      +img
+      +'<div class="detail-related-name">'+c.name+'</div>'
+      +'<div class="detail-related-price">'+fmt(c.price)+'</div>'
+      +'</div>';
+  }).join('');
+  return '<div class="detail-related"><div class="detail-related-title">YOU MIGHT ALSO LIKE</div>'
+    +'<div class="detail-related-grid">'+items+'</div></div>';
+}
+
+function openZoom(e){e.stopPropagation();var img=document.querySelector('#detail-img .photo-obverse');if(!img)return;document.getElementById('zoom-img').src=img.src;document.getElementById('zoom-overlay').classList.add('open');}
+function closeZoom(){document.getElementById('zoom-overlay').classList.remove('open');}
+
+function saveWishlist(){try{localStorage.setItem('ml_wish',JSON.stringify(wishlist));}catch(e){}}
+function loadWishlist(){try{var s=localStorage.getItem('ml_wish');if(s)return JSON.parse(s);}catch(e){}return[];}
+function toggleWish(id,e){if(e)e.stopPropagation();var idx=wishlist.indexOf(id);if(idx>-1){wishlist.splice(idx,1);}else{wishlist.push(id);}saveWishlist();renderShop();showToast(wishlist.indexOf(id)>-1?'Added to wishlist':'Removed from wishlist');}
+
 function saveCart(){try{localStorage.setItem('ml_cart',JSON.stringify(cart));}catch(e){}}
 function loadCart(){try{var s=localStorage.getItem('ml_cart');if(s)return JSON.parse(s);}catch(e){}return{};}
 
@@ -844,7 +902,8 @@ function renderShop(){
   grid.innerHTML=list.map(function(coin){
     var soldOut=Number(coin.stock)===0;
     var inCart=cart[coin.id]||0;
-    var badges=(soldOut?'<span class="card-badge badge-sold">Sold Out</span>':'')+
+    var isNew=coin.created_at&&(Date.now()-Number(coin.created_at))<14*24*60*60*1000;
+    var badges=(soldOut?'<span class="card-badge badge-sold">Sold Out</span>':(isNew?'<span class="card-badge badge-new">NEW</span>':''))+
       (coin.tags||[]).map(function(t){var d=TAG_DEFS.find(function(x){return x.key===t;});return d?'<span class="card-badge '+d.cls+'">'+d.label+'</span>':'';}).join('');
     var img='';
     if(coin.obverse&&coin.reverse){
@@ -861,8 +920,10 @@ function renderShop(){
     ].filter(Boolean).join('');
     var btnDisabled=soldOut||inCart>0;
     var btnText=soldOut?'Sold Out':(inCart?'In Cart':'+ Add');
+    var wished=(wishlist||[]).indexOf(coin.id)>-1;
     return '<div class="card'+(soldOut?' sold-out':'')+'" onclick="openDetail(\''+coin.id+'\')">'
       +'<div class="card-badges">'+badges+'</div>'
+      +'<button class="wish-btn'+(wished?' wished':'')+'" onclick="toggleWish(\''+coin.id+'\',event)">'+(wished?'&#9829;':'&#9825;')+'</button>'
       +'<div class="card-img">'+img+'</div>'
       +'<div class="card-body">'
       +'<div class="card-category">'+(coin.country||'')+(((coin.country||'')&&CAT_DEFS.filter(function(d){return(coin.tags||[]).indexOf(d.key)>-1||(coin.category===d.key);}).length)?' &middot; ':'')+CAT_DEFS.filter(function(d){return(coin.tags||[]).indexOf(d.key)>-1||(coin.category===d.key);}).map(function(d){return d.label;}).join(' / ')+'</div>'
@@ -973,12 +1034,14 @@ function openDetail(id){
     coin.mint?'<div class="detail-meta-item">Mint<span>'+coin.mint+'</span></div>':'',
     coin.country?'<div class="detail-meta-item">Origin<span>'+coin.country+'</span></div>':'',
     '<div class="detail-meta-item">Stock<span>'+(soldOut?'Sold Out':coin.stock+' available')+'</span></div>',
-    '<div class="detail-meta-item">Category<span>'+(CAT_DEFS.filter(function(d){return(coin.tags||[]).indexOf(d.key)>-1||(coin.category===d.key);}).map(function(d){return d.label;}).join(', ')||'—')+'</span></div>',
+    '<div class="detail-meta-item">Category<span>'+(CAT_DEFS.filter(function(d){return(coin.tags||[]).indexOf(d.key)>-1||(coin.category===d.key);}).map(function(d){return d.label;}).join(', ')||'-')+'</span></div>',
   ].filter(Boolean).join('');
   var inCart=cart[id]||0;
   document.getElementById('detail-modal').innerHTML=
     '<div class="detail-img" id="detail-img" onclick="flipDetail()" '+(hasFlip?'':'style="cursor:default"')+'>'
-    +imgHTML+'</div>'
+    +imgHTML
+    +'<button onclick="openZoom(event)" style="position:absolute;bottom:10px;right:10px;z-index:5;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15);color:#fff;width:32px;height:32px;cursor:zoom-in;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;border-radius:2px" title="Zoom">&#x1F50D;</button>'
+    +'</div>'
     +'<button class="detail-close" onclick="closeDetail()">&times;</button>'
     +'<div class="detail-body">'
     +(tagHTML?'<div class="detail-tags">'+tagHTML+'</div>':'')
@@ -1001,7 +1064,9 @@ function openDetail(id){
     +'<button class="detail-add-btn" id="detail-add-btn-'+id+'" '+(soldOut?'disabled':'')
     +' onclick="detailAddToCart(\''+id+'\')">'+(soldOut?'Sold Out':(inCart?'In Cart':'Add to Cart'))+'</button>'
     +'<button onclick="shareCoin(\''+coin.id+'\')" style="background:none;border:1px solid var(--border);color:var(--muted);padding:0 16px;height:44px;font-size:11px;cursor:pointer;font-family:var(--font-body);letter-spacing:1px;white-space:nowrap">SHARE</button>'
-    +'</div></div>';
+    +'</div>'
+    +getRelatedHTML(coin)
+    +'</div>';
   document.getElementById('detail-overlay').classList.add('open');
 }
 function flipDetail(){
@@ -1491,7 +1556,7 @@ async function submitOrder(shippingId,total){
     +'\n\nItems:\n'+itemLines
     +'\n\nShipping: '+opt.label+' '+fmt(opt.price)
     +'\nORDER TOTAL (AUD): '+fmt(total)
-    +'\n\nPlease send a PayPal invoice to: '+(paypalEmail||email)+(paypalEmail?' (PayPal) — contact email: '+email:'');
+    +'\n\nPlease send a PayPal invoice to: '+(paypalEmail||email)+(paypalEmail?' (PayPal) - contact email: '+email:'');
 
   document.getElementById('checkout-body').innerHTML=
     '<div style="text-align:center;padding:48px 20px">'
@@ -1541,8 +1606,13 @@ async function submitOrder(shippingId,total){
       +'Estimated Delivery: '+(snapshotOpt.id==='express'?'1-3 business days':snapshotOpt.id==='priority'?'2-5 business days':'4-8 business days')
       +'</div>'
       +'<p style="color:var(--muted);font-size:14px;line-height:1.7;max-width:380px;margin:0 auto 24px">'
-      +'Your order is confirmed. A <strong style="color:var(--text)">PayPal invoice</strong> will be sent to '
-      +'<strong style="color:var(--text)">'+email+'</strong> shortly. Your coins will be dispatched once payment is received.</p>'
+      +'Your order is confirmed. Here\'s what happens next:</p>'
+      +'<div style="background:var(--card);border:1px solid var(--border);padding:16px 20px;margin-bottom:20px;text-align:left">'
+      +'<div style="display:flex;gap:12px;margin-bottom:12px;font-size:13px"><span style="color:var(--accent);font-weight:700;min-width:20px">1.</span><span>A PayPal invoice will be sent to <strong style="color:var(--text)">'+email+'</strong> within 24 hours</span></div>'
+      +'<div style="display:flex;gap:12px;margin-bottom:12px;font-size:13px"><span style="color:var(--accent);font-weight:700;min-width:20px">2.</span><span>Complete payment within 48 hours to secure your order</span></div>'
+      +'<div style="display:flex;gap:12px;font-size:13px"><span style="color:var(--accent);font-weight:700;min-width:20px">3.</span><span>We\'ll pack and dispatch your coins once payment clears</span></div>'
+      +'</div>'
+      +'<p style="color:var(--muted);font-size:12px;margin-bottom:20px">Questions? Reply to our confirmation email or contact us at <a href="mailto:themintledger@gmail.com" style="color:var(--accent)">themintledger@gmail.com</a></p>'
       +'<div style="background:var(--card);border:1px solid var(--border);padding:16px;text-align:left;margin-bottom:24px;font-size:12px;font-family:var(--font-mono);white-space:pre-line;color:var(--muted)">'
       +snapshotLines+'\n\n'+snapshotOpt.label+': '+fmt(snapshotOpt.price)+'\nTOTAL: '+fmt(total)+'</div>'
       +'<button class="btn-full" onclick="closeModal(\'checkout-modal\')">Back to Shop</button>'
@@ -1933,16 +2003,95 @@ function showShippingInfo(){
   document.body.appendChild(popup);
 }
 
+function updateNavMask(){
+  var nav=document.querySelector('nav');
+  if(!nav) return;
+  var atStart=nav.scrollLeft<=2;
+  var atEnd=nav.scrollLeft+nav.clientWidth>=nav.scrollWidth-2;
+  var mask='';
+  if(!atStart&&!atEnd) mask='linear-gradient(to right,transparent 0,black 32px,black calc(100% - 32px),transparent 100%)';
+  else if(!atStart) mask='linear-gradient(to right,transparent 0,black 32px,black 100%)';
+  else if(!atEnd) mask='linear-gradient(to right,black calc(100% - 32px),transparent 100%)';
+  nav.style.webkitMaskImage=mask;
+  nav.style.maskImage=mask;
+}
+
 updateCartUI();
 loadCoins().then(checkCoinParam);
+var _nav=document.querySelector('nav');if(_nav){_nav.addEventListener('scroll',updateNavMask);window.addEventListener('resize',updateNavMask);updateNavMask();}
 </script>
 
 <footer style="background:var(--surface);border-top:1px solid var(--border);padding:24px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);">
   <div style="letter-spacing:2px;font-family:var(--font-display);color:var(--accent);font-size:14px;">THE MINT LEDGER</div>
-  <div style="display:flex;gap:24px;align-items:center;">
+  <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;">
+    <button onclick="openModal('faq-modal')" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;font-family:var(--font-body);">FAQ</button>
+    <button onclick="openModal('about-modal')" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;font-family:var(--font-body);">About</button>
     <button onclick="openModal('tos-modal')" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;font-family:var(--font-body);">Terms of Service</button>
+    <a href="https://instagram.com/mintledgerau" target="_blank" rel="noopener" style="color:var(--muted);text-decoration:none;font-size:12px;">@mintledgerau</a>
     <span>&copy; 2026 The Mint Ledger. All rights reserved.</span>
   </div>
 </footer>
-</body>
-</html>
+<!-- FAQ MODAL -->
+<div class="modal-overlay" id="faq-modal" onclick="if(event.target.id==='faq-modal')closeModal('faq-modal')">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-header">
+      <div class="modal-title">FAQ</div>
+      <button class="modal-close" onclick="closeModal('faq-modal')">&#x2715;</button>
+    </div>
+    <div class="modal-body" style="max-height:70vh;overflow-y:auto">
+
+      <div style="margin-bottom:24px">
+        <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:6px;letter-spacing:.5px">How does payment work?</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8">We use PayPal invoicing. After you place an order, we'll send a PayPal invoice to your email address within 24 hours. Payment must be completed within 48 hours to secure your order. We don't take card details on this site.</div>
+      </div>
+
+      <div style="margin-bottom:24px">
+        <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:6px;letter-spacing:.5px">How long does shipping take?</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8">Regular Post takes 3-7 business days, Priority Post up to 4 business days, and Express Post 1-3 business days. We dispatch once payment is confirmed. Express Post is tracked - we recommend it for valuable coins.</div>
+      </div>
+
+      <div style="margin-bottom:24px">
+        <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:6px;letter-spacing:.5px">What do the coin grades mean?</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8">Coin grades describe condition on a scale from Poor (heavily worn) to Mint State (uncirculated). Common grades you'll see here: <strong style="color:var(--text)">VG</strong> (Very Good - well worn), <strong style="color:var(--text)">F</strong> (Fine - moderate wear), <strong style="color:var(--text)">VF</strong> (Very Fine - light wear), <strong style="color:var(--text)">EF/XF</strong> (Extremely Fine - slight wear on high points), <strong style="color:var(--text)">UNC</strong> (Uncirculated - no wear). Numbers like VF-30 or MS-63 refer to the Sheldon scale (1-70).</div>
+      </div>
+
+      <div style="margin-bottom:24px">
+        <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:6px;letter-spacing:.5px">Can I return a coin?</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8">We accept returns within 7 days if a coin is significantly not as described. All sales are otherwise final. We take care to grade and describe every coin accurately - if you have any concerns about a listing before buying, just get in touch.</div>
+      </div>
+
+      <div style="margin-bottom:24px">
+        <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:6px;letter-spacing:.5px">What if my parcel goes missing?</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8">For Express Post orders we can provide a tracking number and lodge an inquiry with Australia Post. For untracked options (Regular and Priority Post) we cannot accept liability for lost parcels - this is why we recommend Express Post for anything of value.</div>
+      </div>
+
+      <div style="margin-bottom:24px">
+        <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:6px;letter-spacing:.5px">Do you buy coins?</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8">Yes - use the Sell to Us form on this site. You don't need to know much about the coin, just describe it as best you can and include a photo if you have one. We'll assess it and get back to you with an offer within a few days.</div>
+      </div>
+
+      <div>
+        <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:6px;letter-spacing:.5px">Do you ship internationally?</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8">Not at this stage - Australia-wide only.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT MODAL -->
+<div class="modal-overlay" id="about-modal" onclick="if(event.target.id==='about-modal')closeModal('about-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">ABOUT US</div>
+      <button class="modal-close" onclick="closeModal('about-modal')">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;line-height:1.9;color:var(--muted);margin-bottom:20px">The Mint Ledger started as a personal collection that got a little out of hand. Based in NSW, we source coins from estate sales, collections, and wherever else they turn up. Every coin is handled, researched, and listed by us.</p>
+      <p style="font-size:14px;line-height:1.9;color:var(--muted);margin-bottom:24px">We ship Australia-wide and are always happy to answer questions about any listing. If you have coins of your own you're looking to sell, we'd love to hear from you.</p>
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <a href="https://instagram.com/mintledgerau" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1px;border:1px solid var(--border);padding:10px 18px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          @mintledgerau
+        </a>
+        <a href="/cdn-cgi/l/email-protection#56223e333b3f38223a333231332416313b373f3a7835393b" style="color:var(--muted);text-decoration:none;font-size:12px;"><span class="__cf_email__" data-cfemai
