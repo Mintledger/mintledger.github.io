@@ -711,16 +711,13 @@ For any questions, concerns or claims please contact us at <a href="/cdn-cgi/l/e
 </div>
 
 
-<!-- ZOOM OVERLAY -->
-<div id="zoom-overlay" onclick="closeZoom()">
-  <img id="zoom-img" src="" alt="">
-</div>
-
 <!-- CROP MODAL -->
 <style>
-#zoom-overlay{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:1200;display:none;align-items:center;justify-content:center;cursor:zoom-out;}
-#zoom-overlay.open{display:flex;}
-#zoom-img{max-width:95vw;max-height:95vh;object-fit:contain;}
+
+#detail-img{position:relative;}
+#zoom-lens{position:absolute;border:2px solid rgba(240,192,64,.5);background:rgba(240,192,64,.05);pointer-events:none;display:none;z-index:10;}
+#zoom-result{position:absolute;left:calc(100% + 16px);top:0;width:100%;height:100%;background:#0e0e0e;border:1px solid var(--border);background-repeat:no-repeat;display:none;z-index:20;pointer-events:none;}
+@media(max-width:900px){#zoom-result{display:none!important;}#zoom-slider-wrap{display:none!important;}}
 #crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1100;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:20px;}
 #crop-overlay.open{display:flex;}
 #crop-container{position:relative;width:320px;height:320px;overflow:hidden;cursor:grab;background:#000;box-shadow:0 0 0 3px var(--accent),0 0 60px rgba(240,192,64,.3);flex-shrink:0;transition:border-radius .25s;}
@@ -829,6 +826,89 @@ function checkCoinParam(){
 }
 
 var wishlist=loadWishlist();
+function initZoom(){
+  var detailImg=document.getElementById('detail-img');
+  if(!detailImg) return;
+  var img=detailImg.querySelector('.photo-obverse');
+  if(!img||!img.src) return;
+
+  // create lens and result if not exist
+  var lens=document.getElementById('zoom-lens');
+  var result=document.getElementById('zoom-result');
+  if(!lens){
+    lens=document.createElement('div'); lens.id='zoom-lens';
+    detailImg.appendChild(lens);
+  }
+  if(!result){
+    result=document.createElement('div'); result.id='zoom-result';
+    detailImg.parentNode.style.position='relative';
+    detailImg.after(result);
+  }
+  // Zoom slider
+  var sliderWrap=document.getElementById('zoom-slider-wrap');
+  if(!sliderWrap){
+    sliderWrap=document.createElement('div');
+    sliderWrap.id='zoom-slider-wrap';
+    sliderWrap.style.cssText='display:none;align-items:center;gap:10px;margin-top:8px;';
+    sliderWrap.innerHTML='<span style="font-size:10px;color:var(--muted);letter-spacing:1px;white-space:nowrap">ZOOM</span>'
+      +'<input id="zoom-slider" type="range" min="1.5" max="8" step="0.1" value="3" style="flex:1;accent-color:var(--accent);cursor:pointer">'
+      +'<span id="zoom-level-label" style="font-size:10px;color:var(--muted);min-width:28px;text-align:right">3x</span>';
+    result.parentNode.insertBefore(sliderWrap, result.nextSibling);
+    document.getElementById('zoom-slider').addEventListener('input', function(){
+      zoom=parseFloat(this.value);
+      document.getElementById('zoom-level-label').textContent=zoom.toFixed(1)+'x';
+      updateZoomBg();
+    });
+  }
+
+  var zoom=3;
+
+  function updateZoomBg(){
+    result.style.backgroundSize=(detailImg.offsetWidth*zoom)+'px '+(detailImg.offsetHeight*zoom)+'px';
+  }
+
+  function moveLens(e){
+    if(window.innerWidth<=900) return;
+    e.preventDefault();
+    var pos=getCursorPos(e);
+    var lw=lens.offsetWidth/2, lh=lens.offsetHeight/2;
+    var x=Math.max(lw, Math.min(pos.x, detailImg.offsetWidth-lw));
+    var y=Math.max(lh, Math.min(pos.y, detailImg.offsetHeight-lh));
+    lens.style.left=(x-lw)+'px';
+    lens.style.top=(y-lh)+'px';
+    result.style.backgroundPosition='-'+(x*zoom-result.offsetWidth/2)+'px -'+(y*zoom-result.offsetHeight/2)+'px';
+    updateZoomBg();
+  }
+  function getCursorPos(e){
+    var r=detailImg.getBoundingClientRect();
+    var t=e.touches?e.touches[0]:e;
+    return {x:t.clientX-r.left, y:t.clientY-r.top};
+  }
+  function showLens(){
+    if(window.innerWidth<=900) return;
+    var lensSize=80;
+    lens.style.width=lensSize+'px'; lens.style.height=lensSize+'px';
+    result.style.backgroundImage='url('+img.src+')';
+    updateZoomBg();
+    lens.style.display='block'; result.style.display='block';
+    var sw=document.getElementById('zoom-slider-wrap');if(sw)sw.style.display='flex';
+  }
+  function hideLens(){
+    lens.style.display='none'; result.style.display='none';
+    var sw=document.getElementById('zoom-slider-wrap');if(sw)sw.style.display='none';
+  }
+
+  detailImg.removeEventListener('mousemove', detailImg._zoomMove);
+  detailImg.removeEventListener('mouseenter', detailImg._zoomEnter);
+  detailImg.removeEventListener('mouseleave', detailImg._zoomLeave);
+  detailImg._zoomMove=moveLens;
+  detailImg._zoomEnter=showLens;
+  detailImg._zoomLeave=hideLens;
+  detailImg.addEventListener('mousemove', moveLens);
+  detailImg.addEventListener('mouseenter', showLens);
+  detailImg.addEventListener('mouseleave', hideLens);
+}
+
 function getRelatedHTML(coin){
   var coinTags=(coin.tags||[]);
   var related=(coins||[]).filter(function(c){
@@ -851,8 +931,6 @@ function getRelatedHTML(coin){
     +'<div class="detail-related-grid">'+items+'</div></div>';
 }
 
-function openZoom(e){e.stopPropagation();var img=document.querySelector('#detail-img .photo-obverse');if(!img)return;document.getElementById('zoom-img').src=img.src;document.getElementById('zoom-overlay').classList.add('open');}
-function closeZoom(){document.getElementById('zoom-overlay').classList.remove('open');}
 
 function toggleWishPanel(){
   document.getElementById('cart-overlay').classList.remove('open');
@@ -1094,7 +1172,6 @@ function openDetail(id){
   document.getElementById('detail-modal').innerHTML=
     '<div class="detail-img" id="detail-img" onclick="flipDetail()" '+(hasFlip?'':'style="cursor:default"')+'>'
     +imgHTML
-    +'<button onclick="openZoom(event)" style="position:absolute;bottom:10px;right:10px;z-index:5;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15);color:#fff;width:32px;height:32px;cursor:zoom-in;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;border-radius:2px" title="Zoom">&#x1F50D;</button>'
     +'</div>'
     +'<button class="detail-close" onclick="closeDetail()">&times;</button>'
     +'<div class="detail-body">'
@@ -1122,6 +1199,7 @@ function openDetail(id){
     +getRelatedHTML(coin)
     +'</div>';
   document.getElementById('detail-overlay').classList.add('open');
+  setTimeout(initZoom, 50);
 }
 function flipDetail(){
   var img=document.getElementById('detail-img'); if(!img) return;
