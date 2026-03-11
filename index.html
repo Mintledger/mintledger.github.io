@@ -841,22 +841,17 @@ function initZoom(){
   var zf=document.getElementById('zoom-float');
   if(!zf){zf=document.createElement('div');zf.id='zoom-float';document.body.appendChild(zf);}
 
-  // Slider — insert once below detail-img, always visible
-  var sliderWrap=document.getElementById('zoom-slider-wrap');
-  if(!sliderWrap){
-    sliderWrap=document.createElement('div');
-    sliderWrap.id='zoom-slider-wrap';
-    sliderWrap.innerHTML='<span style="font-size:10px;color:var(--muted);letter-spacing:1px;white-space:nowrap">ZOOM</span>'
-      +'<input id="zoom-slider" type="range" min="1.5" max="8" step="0.1" value="3" style="flex:1;accent-color:var(--accent);cursor:pointer">'
-      +'<span id="zoom-level-label" style="font-size:10px;color:var(--muted);min-width:30px;text-align:right">3x</span>';
-    detailImg.after(sliderWrap);
-    document.getElementById('zoom-slider').addEventListener('input',function(){
+  // Slider already in HTML — just wire it up
+  var sliderInput=document.getElementById('zoom-slider');
+  if(sliderInput && !sliderInput._bound){
+    sliderInput._bound=true;
+    sliderInput.addEventListener('input',function(){
       zoom=parseFloat(this.value);
       document.getElementById('zoom-level-label').textContent=zoom.toFixed(1)+'x';
     });
   }
 
-  var zoom=parseFloat((document.getElementById('zoom-slider')||{value:3}).value)||3;
+  var zoom=parseFloat((sliderInput||{value:3}).value)||3;
   var lensSize=80;
 
   function moveLens(e){
@@ -1161,8 +1156,15 @@ function openDetail(id){
   ].filter(Boolean).join('');
   var inCart=cart[id]||0;
   document.getElementById('detail-modal').innerHTML=
-    '<div class="detail-img" id="detail-img" onclick="flipDetail()" '+(hasFlip?'':'style="cursor:default"')+'>'
+    '<div id="detail-left-col" style="display:flex;flex-direction:column;">'
+    +'<div class="detail-img" id="detail-img" onclick="flipDetail()" '+(hasFlip?'':'style="cursor:default"')+'>'
     +imgHTML
+    +'</div>'
+    +'<div id="zoom-slider-wrap" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--border);background:var(--card);">'
+    +'<span style="font-size:10px;color:var(--muted);letter-spacing:1px;white-space:nowrap">ZOOM</span>'
+    +'<input id="zoom-slider" type="range" min="1.5" max="8" step="0.1" value="3" style="flex:1;accent-color:var(--accent);cursor:pointer">'
+    +'<span id="zoom-level-label" style="font-size:10px;color:var(--muted);min-width:30px;text-align:right">3x</span>'
+    +'</div>'
     +'</div>'
     +'<button class="detail-close" onclick="closeDetail()">&times;</button>'
     +'<div class="detail-body">'
