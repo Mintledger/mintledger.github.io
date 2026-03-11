@@ -874,7 +874,7 @@ function updateWishUI(){
       ?'<img class="cart-thumb" src="'+coin.obverse+'" alt="'+coin.name+'">'
       :'<div class="cart-thumb-ph">&#x1FA99;</div>';
     var soldOut=Number(coin.stock)===0;
-    return '<div class="cart-item">'
+    return '<div class="cart-item" onclick="toggleWishPanel();setTimeout(function(){openDetail(\''+id+'\')},300)" style="cursor:pointer">'
       +img
       +'<div class="cart-item-info">'
       +'<div class="cart-item-name">'+coin.name+'</div>'
@@ -884,7 +884,7 @@ function updateWishUI(){
         ?'<span style="font-size:11px;color:var(--muted)">Sold Out</span>'
         :'<button onclick="addToCart(\''+id+'\',event);updateWishUI()" style="font-size:11px;background:var(--accent);color:#000;border:none;padding:5px 12px;cursor:pointer;font-family:var(--font-body);font-weight:700">Add to Cart</button>'
       )
-      +'<button onclick="toggleWish(\''+id+'\',event)" style="font-size:11px;background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;cursor:pointer;font-family:var(--font-body)">Remove</button>'
+      +'<button onclick="event.stopPropagation();toggleWish(\''+id+'\',event)" style="font-size:11px;background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;cursor:pointer;font-family:var(--font-body)">Remove</button>'
       +'</div>'
       +'</div>'
       +'<div class="cart-item-price">'+fmt(coin.price)+'</div>'
